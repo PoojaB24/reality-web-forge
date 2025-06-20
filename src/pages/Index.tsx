@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Leaf, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Leaf, Lightbulb, ArrowLeft } from 'lucide-react';
 import ProductScanner from '@/components/ProductScanner';
 import EcoScoreCard from '@/components/EcoScoreCard';
 import AlternativeSuggestions from '@/components/AlternativeSuggestions';
@@ -28,6 +29,10 @@ const Index = () => {
   const handleSelectAlternative = (alternativeId: string) => {
     console.log('Alternative selected:', alternativeId);
     setSelectedProductId(alternativeId);
+  };
+
+  const handleBackToHome = () => {
+    setSelectedProductId(null);
   };
 
   console.log('Current selected product ID:', selectedProductId);
@@ -74,7 +79,21 @@ const Index = () => {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        {/* Product Scanner */}
+        {/* Back Button - Only show when a product is selected */}
+        {selectedProductId && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <Button 
+              onClick={handleBackToHome}
+              variant="outline"
+              className="flex items-center space-x-2 hover:bg-green-50"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Home</span>
+            </Button>
+          </div>
+        )}
+
+        {/* Product Scanner - Always visible */}
         <div className="max-w-2xl mx-auto mb-8">
           <ProductScanner onProductScanned={handleProductScanned} />
         </div>
@@ -82,6 +101,16 @@ const Index = () => {
         {/* Product Details */}
         {currentProduct && (
           <div className="max-w-4xl mx-auto space-y-6">
+            {/* Product Name Display */}
+            <div className="text-center mb-4">
+              <h2 className="text-3xl font-bold text-gray-800">
+                {currentProduct.name}
+              </h2>
+              <p className="text-lg text-gray-600 mt-1">
+                by {currentProduct.brand}
+              </p>
+            </div>
+
             <EcoScoreCard product={currentProduct} />
 
             {/* Eco Tip */}
@@ -157,35 +186,37 @@ const Index = () => {
           </div>
         )}
 
-        {/* How It Works Section */}
-        <div className="mt-16 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-green-100">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-            How EcoCart Works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📱</span>
+        {/* How It Works Section - Only show when no product is selected */}
+        {!selectedProductId && (
+          <div className="mt-16 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-green-100">
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+              How EcoCart Works
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📱</span>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">1. Scan or Search</h3>
+                <p className="text-gray-600">Use your camera to scan barcodes or search for products by name</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">1. Scan or Search</h3>
-              <p className="text-gray-600">Use your camera to scan barcodes or search for products by name</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📊</span>
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">2. See EcoScore</h3>
+                <p className="text-gray-600">Get instant ratings based on sustainability factors like packaging and carbon footprint</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">2. See EcoScore</h3>
-              <p className="text-gray-600">Get instant ratings based on sustainability factors like packaging and carbon footprint</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🌱</span>
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🌱</span>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">3. Choose Better</h3>
+                <p className="text-gray-600">Discover greener alternatives and make environmentally conscious choices</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">3. Choose Better</h3>
-              <p className="text-gray-600">Discover greener alternatives and make environmentally conscious choices</p>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
