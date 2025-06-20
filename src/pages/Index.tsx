@@ -16,12 +16,22 @@ const Index = () => {
   const ecoTip = selectedProductId ? ecoTips[selectedProductId] : null;
 
   const handleProductScanned = (productId: string) => {
+    console.log('Product scanned in Index:', productId);
+    console.log('Available products:', products.map(p => ({ id: p.id, name: p.name })));
+    
+    const product = products.find(p => p.id === productId);
+    console.log('Found product in Index:', product);
+    
     setSelectedProductId(productId);
   };
 
   const handleSelectAlternative = (alternativeId: string) => {
+    console.log('Alternative selected:', alternativeId);
     setSelectedProductId(alternativeId);
   };
+
+  console.log('Current selected product ID:', selectedProductId);
+  console.log('Current product:', currentProduct);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
@@ -106,7 +116,7 @@ const Index = () => {
               Try Demo Products
             </h2>
             <p className="text-center text-gray-600 mb-8">
-              Click on any product to see its EcoScore and environmental impact
+              Search for: "water bottle", "coffee cup", "plastic bag", or click on any product below
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
