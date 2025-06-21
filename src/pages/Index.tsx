@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,7 @@ import HelpPage from '@/components/HelpPage';
 import Cart from '@/components/Cart';
 import Auth from '@/components/Auth';
 import Checkout from '@/components/Checkout';
-import { products, alternativesMap, ecoTips, type Product } from '@/data/productData';
+import { products, alternativesMap, ecoTips, type Product as ProductType } from '@/data/productData';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +42,7 @@ const Index = () => {
     setSelectedProductId(alternativeId);
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: ProductType) => {
     addToCart({
       id: product.id,
       name: product.name,
