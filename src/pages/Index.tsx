@@ -343,9 +343,7 @@ const Index = () => {
                         product.ecoScore === 'A' ? 'bg-green-500' :
                         product.ecoScore === 'B' ? 'bg-yellow-500' :
                         product.ecoScore === 'C' ? 'bg-orange-500' :
-                        product.ecoScore === '
-
-' ? 'bg-red-400' :
+                        product.ecoScore === 'D' ? 'bg-red-400' :
                         'bg-red-600'
                       } text-white font-bold`}>
                         {product.ecoScore}
