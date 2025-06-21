@@ -18,7 +18,7 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
-  total: number; // Add this for backward compatibility with Checkout
+  total: number;
   itemCount: number;
 }
 
@@ -74,7 +74,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearCart,
       totalItems,
       totalPrice,
-      total: totalPrice, // Provide total as alias for totalPrice
+      total: totalPrice,
       itemCount
     }}>
       {children}
