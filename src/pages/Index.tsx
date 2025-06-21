@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -93,7 +92,6 @@ const Index = () => {
     }, 3000);
   };
 
-  // Show different views based on current state
   if (currentView === 'help') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
@@ -214,7 +212,7 @@ const Index = () => {
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                <div className="text-2xl font-bold text-green-600">25+</div>
+                <div className="text-2xl font-bold text-green-600">200+</div>
               </div>
               <div className="text-xs text-gray-500">Products Available</div>
             </div>
@@ -319,7 +317,7 @@ const Index = () => {
             
             {/* Category Filters */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {['beverages', 'food', 'personal-care', 'household', 'electronics', 'snacks'].map((category) => (
+              {['beverages', 'food', 'personal-care', 'household', 'electronics', 'snacks', 'bags', 'cleaning'].map((category) => (
                 <Badge key={category} variant="outline" className="cursor-pointer hover:bg-green-50">
                   {category.replace('-', ' ')}
                 </Badge>
@@ -333,6 +331,15 @@ const Index = () => {
                   className="bg-white/80 backdrop-blur-sm border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <CardContent className="p-4 space-y-3">
+                    {/* Product Image */}
+                    <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden mb-3">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
