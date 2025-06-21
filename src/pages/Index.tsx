@@ -3,16 +3,27 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp } from 'lucide-react';
+import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp, ShoppingCart, User, LogOut } from 'lucide-react';
 import ProductScanner from '@/components/ProductScanner';
 import EcoScoreCard from '@/components/EcoScoreCard';
 import AlternativeSuggestions from '@/components/AlternativeSuggestions';
 import HelpPage from '@/components/HelpPage';
+import Cart from '@/components/Cart';
+import Auth from '@/components/Auth';
+import Checkout from '@/components/Checkout';
 import { products, alternativesMap, ecoTips } from '@/data/productData';
+import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+
+type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complete';
 
 const Index = () => {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [showHelp, setShowHelp] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewState>('home');
+  const { addToCart, itemCount } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { toast } = useToast();
 
   const currentProduct = selectedProductId ? products.find(p => p.id === selectedProductId) : null;
   const alternatives = selectedProductId ? alternativesMap[selectedProductId] || [] : [];
@@ -20,12 +31,10 @@ const Index = () => {
 
   const handleProductScanned = (productId: string) => {
     console.log('Product scanned in Index:', productId);
-    console.log('Available products:', products.map(p => ({ id: p.id, name: p.name })));
-    
     const product = products.find(p => p.id === productId);
     console.log('Found product in Index:', product);
-    
     setSelectedProductId(productId);
+    setCurrentView('home');
   };
 
   const handleSelectAlternative = (alternativeId: string) => {
@@ -33,26 +42,103 @@ const Index = () => {
     setSelectedProductId(alternativeId);
   };
 
+  const handleAddToCart = (product: typeof products[0]) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      ecoScore: product.ecoScore,
+    });
+    
+    toast({
+      title: "Added to Cart!",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
   const handleBackToHome = () => {
     setSelectedProductId(null);
-    setShowHelp(false);
+    setCurrentView('home');
   };
 
-  const handleShowHelp = () => {
-    setShowHelp(true);
-    setSelectedProductId(null);
+  const handleViewCart = () => {
+    setCurrentView('cart');
   };
 
-  console.log('Current selected product ID:', selectedProductId);
-  console.log('Current product:', currentProduct);
+  const handleAuth = () => {
+    setCurrentView('auth');
+  };
 
-  // Show Help Page
-  if (showHelp) {
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      setCurrentView('auth');
+    } else {
+      setCurrentView('checkout');
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    if (itemCount > 0) {
+      setCurrentView('checkout');
+    } else {
+      setCurrentView('home');
+    }
+  };
+
+  const handleOrderComplete = () => {
+    setCurrentView('order-complete');
+    setTimeout(() => {
+      setCurrentView('home');
+    }, 3000);
+  };
+
+  // Show different views based on current state
+  if (currentView === 'help') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
         <div className="container mx-auto px-6 py-8">
           <HelpPage onBackToHome={handleBackToHome} />
         </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'cart') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+        <div className="container mx-auto px-6 py-8">
+          <Cart onBackToShopping={handleBackToHome} onProceedToCheckout={handleCheckout} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'auth') {
+    return <Auth onBackToHome={handleBackToHome} onSuccess={handleAuthSuccess} />;
+  }
+
+  if (currentView === 'checkout') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+        <div className="container mx-auto px-6 py-8">
+          <Checkout onBackToCart={() => setCurrentView('cart')} onOrderComplete={handleOrderComplete} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'order-complete') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
+        <Card className="max-w-md mx-auto text-center p-8">
+          <CardContent className="space-y-4">
+            <div className="text-6xl">🎉</div>
+            <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
+            <p className="text-gray-600">Thank you for choosing eco-friendly products. Your order will be delivered in 2-3 business days.</p>
+            <div className="text-green-600 font-medium">🌱 You've saved 2.5kg CO2 with this order!</div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -72,23 +158,55 @@ const Index = () => {
                   EcoCart
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Browser Extension & Mobile App
+                  Eco-Friendly Shopping Platform
                 </p>
               </div>
             </div>
             
-            <Button
-              onClick={handleShowHelp}
-              variant="outline"
-              className="flex items-center space-x-2 hover:bg-green-50"
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span>Help & Tutorial</span>
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={() => setCurrentView('help')}
+                variant="outline"
+                className="flex items-center space-x-2 hover:bg-green-50"
+              >
+                <HelpCircle className="h-4 w-4" />
+                <span>Help</span>
+              </Button>
+
+              <Button
+                onClick={handleViewCart}
+                variant="outline"
+                className="flex items-center space-x-2 hover:bg-green-50 relative"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span>Cart</span>
+                {itemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs">
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span>{user?.name}</span>
+                  </Button>
+                  <Button onClick={logout} variant="outline" size="icon">
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={handleAuth} className="bg-blue-600 hover:bg-blue-700">
+                  Sign In
+                </Button>
+              )}
+            </div>
           </div>
           
           <p className="text-center text-gray-600 mt-3 text-lg">
-            Scan products to see their environmental impact and discover greener alternatives
+            Shop eco-friendly products and discover greener alternatives
           </p>
           
           {/* Enhanced Stats Bar */}
@@ -105,7 +223,7 @@ const Index = () => {
                 <Users className="h-5 w-5 text-green-600" />
                 <div className="text-2xl font-bold text-green-600">500K</div>
               </div>
-              <div className="text-xs text-gray-500">Active Users</div>
+              <div className="text-xs text-gray-500">Happy Customers</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
@@ -128,7 +246,7 @@ const Index = () => {
               className="flex items-center space-x-2 hover:bg-green-50"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Back to Home</span>
+              <span>Back to Products</span>
             </Button>
           </div>
         )}
@@ -152,6 +270,17 @@ const Index = () => {
             </div>
 
             <EcoScoreCard product={currentProduct} />
+
+            {/* Add to Cart Button */}
+            <div className="text-center">
+              <Button
+                onClick={() => handleAddToCart(currentProduct)}
+                className="bg-green-600 hover:bg-green-700 text-lg px-8 py-3"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Add to Cart - ${currentProduct.price.toFixed(2)}
+              </Button>
+            </div>
 
             {/* Eco Tip */}
             {ecoTip && (
@@ -182,10 +311,10 @@ const Index = () => {
         {!selectedProductId && (
           <div className="mt-12">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-              Try Demo Products
+              Shop Eco-Friendly Products
             </h2>
             <p className="text-center text-gray-600 mb-8">
-              Search for any product name or click on any item below to see its environmental impact
+              Search for any product name or browse our collection below
             </p>
             
             {/* Category Filters */}
@@ -201,23 +330,22 @@ const Index = () => {
               {products.map((product) => (
                 <Card 
                   key={product.id} 
-                  className="bg-white/80 backdrop-blur-sm border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
-                  onClick={() => setSelectedProductId(product.id)}
+                  className="bg-white/80 backdrop-blur-sm border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <CardContent className="p-4 space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
                         <p className="text-sm text-gray-600">{product.brand}</p>
-                        {product.price && (
-                          <p className="text-green-600 font-bold">{product.price}</p>
-                        )}
+                        <p className="text-green-600 font-bold text-xl">${product.price.toFixed(2)}</p>
                       </div>
                       <Badge className={`${
                         product.ecoScore === 'A' ? 'bg-green-500' :
                         product.ecoScore === 'B' ? 'bg-yellow-500' :
                         product.ecoScore === 'C' ? 'bg-orange-500' :
-                        product.ecoScore === 'D' ? 'bg-red-400' :
+                        product.ecoScore === '
+
+' ? 'bg-red-400' :
                         'bg-red-600'
                       } text-white font-bold`}>
                         {product.ecoScore}
@@ -228,6 +356,23 @@ const Index = () => {
                       <p><strong>CO2:</strong> {product.co2Impact}</p>
                       <p><strong>Packaging:</strong> {product.packaging}</p>
                       <p><strong>Recyclable:</strong> {product.recyclable ? '✅' : '❌'}</p>
+                    </div>
+                    
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        onClick={() => setSelectedProductId(product.id)}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        onClick={() => handleAddToCart(product)}
+                        className="flex-1 bg-green-600 hover:bg-green-700"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-1" />
+                        Add
+                      </Button>
                     </div>
                     
                     <Badge variant="outline" className="text-xs">
@@ -246,38 +391,35 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
               How EcoCart Works
             </h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📱</span>
+                  <span className="text-2xl">🔍</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">1. Scan or Search</h3>
-                <p className="text-gray-600">Use your camera to scan barcodes or search for products by name</p>
+                <h3 className="font-semibold text-lg mb-2">1. Browse & Search</h3>
+                <p className="text-gray-600">Search or scan products to see their environmental impact</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">📊</span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">2. See EcoScore</h3>
-                <p className="text-gray-600">Get instant ratings based on sustainability factors like packaging and carbon footprint</p>
+                <p className="text-gray-600">Get instant ratings based on sustainability factors</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🛒</span>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">3. Add to Cart</h3>
+                <p className="text-gray-600">Choose eco-friendly products and add them to your cart</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🌱</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">3. Choose Better</h3>
-                <p className="text-gray-600">Discover greener alternatives and make environmentally conscious choices</p>
+                <h3 className="font-semibold text-lg mb-2">4. Make Impact</h3>
+                <p className="text-gray-600">Complete your purchase and help save the planet</p>
               </div>
-            </div>
-            
-            <div className="text-center mt-8">
-              <Button 
-                onClick={handleShowHelp}
-                className="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
-              >
-                <HelpCircle className="h-4 w-4 mr-2" />
-                View Full Tutorial & Demo Videos
-              </Button>
             </div>
           </div>
         )}

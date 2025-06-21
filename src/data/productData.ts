@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -10,7 +9,7 @@ export interface Product {
   packaging: string;
   recyclable: boolean;
   sustainabilityFeatures: string[];
-  price?: string;
+  price: number; // Changed to number for calculations
   barcode?: string;
 }
 
@@ -37,7 +36,7 @@ export const products: Product[] = [
     packaging: 'Single-use plastic',
     recyclable: true,
     sustainabilityFeatures: ['Recyclable', 'BPA-free'],
-    price: '$1.29',
+    price: 1.29,
     barcode: '1234567890123'
   },
   {
@@ -51,7 +50,7 @@ export const products: Product[] = [
     packaging: 'Reusable glass',
     recyclable: true,
     sustainabilityFeatures: ['100% Recyclable', 'Reusable', 'Zero Plastic'],
-    price: '$8.99',
+    price: 8.99,
     barcode: '2345678901234'
   },
   {
@@ -65,7 +64,7 @@ export const products: Product[] = [
     packaging: 'Durable metal',
     recyclable: true,
     sustainabilityFeatures: ['Lifetime Durability', '100% Recyclable', 'Insulated'],
-    price: '$24.99',
+    price: 24.99,
     barcode: '3456789012345'
   },
   {
@@ -79,7 +78,7 @@ export const products: Product[] = [
     packaging: 'Paper/plastic composite',
     recyclable: false,
     sustainabilityFeatures: ['Biodegradable (partially)'],
-    price: '$0.99',
+    price: 0.99,
     barcode: '4567890123456'
   },
   {
@@ -93,7 +92,7 @@ export const products: Product[] = [
     packaging: 'Renewable bamboo',
     recyclable: true,
     sustainabilityFeatures: ['Biodegradable', 'Renewable Material', 'Reusable'],
-    price: '$15.99',
+    price: 15.99,
     barcode: '5678901234567'
   },
   {
@@ -107,7 +106,7 @@ export const products: Product[] = [
     packaging: 'Plastic bottle',
     recyclable: true,
     sustainabilityFeatures: ['100% Recyclable Bottle'],
-    price: '$1.89',
+    price: 1.89,
     barcode: '0049000042566'
   },
   {
@@ -121,7 +120,7 @@ export const products: Product[] = [
     packaging: 'Plastic bottle',
     recyclable: true,
     sustainabilityFeatures: ['Carbon Neutral', 'Recyclable'],
-    price: '$2.49',
+    price: 2.49,
     barcode: '3068320055008'
   },
   
@@ -137,7 +136,7 @@ export const products: Product[] = [
     packaging: 'No packaging',
     recyclable: true,
     sustainabilityFeatures: ['Organic', 'Compostable', 'Zero Packaging'],
-    price: '$0.79',
+    price: 0.79,
     barcode: '4011'
   },
   {
@@ -151,7 +150,7 @@ export const products: Product[] = [
     packaging: 'Styrofoam cup',
     recyclable: false,
     sustainabilityFeatures: [],
-    price: '$1.99',
+    price: 1.99,
     barcode: '8901030895012'
   },
   {
@@ -165,11 +164,10 @@ export const products: Product[] = [
     packaging: 'Cardboard box',
     recyclable: true,
     sustainabilityFeatures: ['Organic', 'Recyclable Packaging'],
-    price: '$3.49',
+    price: 3.49,
     barcode: '8712566301584'
   },
   
-  // Bags & Packaging
   {
     id: '11',
     name: 'Plastic Shopping Bag',
@@ -181,7 +179,7 @@ export const products: Product[] = [
     packaging: 'Single-use plastic',
     recyclable: false,
     sustainabilityFeatures: [],
-    price: '$0.10',
+    price: 0.10,
     barcode: '6789012345678'
   },
   {
@@ -195,7 +193,7 @@ export const products: Product[] = [
     packaging: 'Organic cotton',
     recyclable: true,
     sustainabilityFeatures: ['Reusable', 'Organic Cotton', 'Durable'],
-    price: '$12.99',
+    price: 12.99,
     barcode: '7890123456789'
   },
   {
@@ -209,11 +207,9 @@ export const products: Product[] = [
     packaging: 'Recycled paper',
     recyclable: true,
     sustainabilityFeatures: ['Recyclable', 'Biodegradable'],
-    price: '$0.25',
+    price: 0.25,
     barcode: '9012345678901'
   },
-  
-  // Personal Care
   {
     id: '14',
     name: 'Plastic Toothbrush',
@@ -225,7 +221,7 @@ export const products: Product[] = [
     packaging: 'Plastic packaging',
     recyclable: false,
     sustainabilityFeatures: ['BPA-free'],
-    price: '$2.99',
+    price: 2.99,
     barcode: '1357924680135'
   },
   {
@@ -239,7 +235,7 @@ export const products: Product[] = [
     packaging: 'Cardboard',
     recyclable: true,
     sustainabilityFeatures: ['Biodegradable', 'Compostable Handle', 'Minimal Packaging'],
-    price: '$4.99',
+    price: 4.99,
     barcode: '2468013579246'
   },
   {
@@ -253,7 +249,7 @@ export const products: Product[] = [
     packaging: 'Plastic bottle',
     recyclable: true,
     sustainabilityFeatures: ['Recyclable Bottle', 'Sulfate-free'],
-    price: '$8.99',
+    price: 8.99,
     barcode: '3691470258014'
   },
   {
@@ -267,11 +263,9 @@ export const products: Product[] = [
     packaging: 'Cardboard wrapper',
     recyclable: true,
     sustainabilityFeatures: ['Zero Plastic', 'Long-lasting', 'Natural Ingredients'],
-    price: '$12.99',
+    price: 12.99,
     barcode: '8025691470258'
   },
-  
-  // Electronics
   {
     id: '18',
     name: 'Smartphone Charger',
@@ -283,7 +277,7 @@ export const products: Product[] = [
     packaging: 'Plastic blister pack',
     recyclable: false,
     sustainabilityFeatures: ['Energy Efficient'],
-    price: '$19.99',
+    price: 19.99,
     barcode: '4702581470369'
   },
   {
@@ -297,11 +291,9 @@ export const products: Product[] = [
     packaging: 'Recycled cardboard',
     recyclable: true,
     sustainabilityFeatures: ['Solar Powered', 'Recyclable Packaging'],
-    price: '$45.99',
+    price: 45.99,
     barcode: '1472583691470'
   },
-  
-  // Household Items
   {
     id: '20',
     name: 'Plastic Dish Soap',
@@ -313,7 +305,7 @@ export const products: Product[] = [
     packaging: 'Plastic bottle',
     recyclable: true,
     sustainabilityFeatures: ['Phosphate-free'],
-    price: '$3.49',
+    price: 3.49,
     barcode: '5814703692580'
   },
   {
@@ -327,11 +319,9 @@ export const products: Product[] = [
     packaging: 'Compostable pouch',
     recyclable: true,
     sustainabilityFeatures: ['Concentrated Formula', 'Compostable Packaging', 'Plant-based'],
-    price: '$6.99',
+    price: 6.99,
     barcode: '2580147036925'
   },
-  
-  // Snacks
   {
     id: '22',
     name: 'Potato Chips Bag',
@@ -343,7 +333,7 @@ export const products: Product[] = [
     packaging: 'Multi-layer foil',
     recyclable: false,
     sustainabilityFeatures: [],
-    price: '$2.99',
+    price: 2.99,
     barcode: '3692581470369'
   },
   {
@@ -357,11 +347,9 @@ export const products: Product[] = [
     packaging: 'Recyclable plastic',
     recyclable: true,
     sustainabilityFeatures: ['Organic', 'Fair Trade', 'Recyclable Packaging'],
-    price: '$5.99',
+    price: 5.99,
     barcode: '1470369258147'
   },
-  
-  // Cleaning Products
   {
     id: '24',
     name: 'All-Purpose Cleaner Spray',
@@ -373,7 +361,7 @@ export const products: Product[] = [
     packaging: 'Plastic spray bottle',
     recyclable: true,
     sustainabilityFeatures: ['Ammonia-free'],
-    price: '$4.99',
+    price: 4.99,
     barcode: '9630741852963'
   },
   {
@@ -387,7 +375,7 @@ export const products: Product[] = [
     packaging: 'Glass bottle',
     recyclable: true,
     sustainabilityFeatures: ['Non-toxic', 'Biodegradable', 'Refillable Glass Bottle'],
-    price: '$7.99',
+    price: 7.99,
     barcode: '7418529630741'
   }
 ];
