@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp, ShoppingCart, User, LogOut } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp, ShoppingCart, User, LogOut, Search } from 'lucide-react';
 import ProductScanner from '@/components/ProductScanner';
 import EcoScoreCard from '@/components/EcoScoreCard';
 import AlternativeSuggestions from '@/components/AlternativeSuggestions';
 import MoreLikeThis from '@/components/MoreLikeThis';
+import ProductReviews from '@/components/ProductReviews';
+import SearchSuggestions from '@/components/SearchSuggestions';
 import HelpPage from '@/components/HelpPage';
 import Cart from '@/components/Cart';
 import Auth from '@/components/Auth';
@@ -21,6 +24,8 @@ type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complet
 const Index = () => {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('home');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const { addToCart, itemCount } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
@@ -29,12 +34,20 @@ const Index = () => {
   const alternatives = selectedProductId ? alternativesMap[selectedProductId] || [] : [];
   const ecoTip = selectedProductId ? ecoTips[selectedProductId] : null;
 
+  // Filter products based on search query
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleProductScanned = (productId: string) => {
     console.log('Product scanned in Index:', productId);
     const product = products.find(p => p.id === productId);
     console.log('Found product in Index:', product);
     setSelectedProductId(productId);
     setCurrentView('home');
+    setShowSuggestions(false);
   };
 
   const handleSelectAlternative = (alternativeId: string) => {
@@ -60,37 +73,25 @@ const Index = () => {
   const handleBackToHome = () => {
     setSelectedProductId(null);
     setCurrentView('home');
+    setSearchQuery('');
+    setShowSuggestions(false);
   };
 
-  const handleViewCart = () => {
-    setCurrentView('cart');
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setShowSuggestions(value.length > 0 || value === '');
   };
 
-  const handleAuth = () => {
-    setCurrentView('auth');
-  };
-
-  const handleCheckout = () => {
-    if (!isAuthenticated) {
-      setCurrentView('auth');
-    } else {
-      setCurrentView('checkout');
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    // Auto-search for the suggestion
+    const matchedProduct = products.find(p => 
+      p.name.toLowerCase().includes(suggestion.toLowerCase())
+    );
+    if (matchedProduct) {
+      setSelectedProductId(matchedProduct.id);
     }
-  };
-
-  const handleAuthSuccess = () => {
-    if (itemCount > 0) {
-      setCurrentView('checkout');
-    } else {
-      setCurrentView('home');
-    }
-  };
-
-  const handleOrderComplete = () => {
-    setCurrentView('order-complete');
-    setTimeout(() => {
-      setCurrentView('home');
-    }, 3000);
   };
 
   if (currentView === 'help') {
@@ -107,21 +108,21 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="container mx-auto px-6 py-8">
-          <Cart onBackToShopping={handleBackToHome} onProceedToCheckout={handleCheckout} />
+          <Cart onBackToShopping={handleBackToHome} onProceedToCheckout={() => setCurrentView('checkout')} />
         </div>
       </div>
     );
   }
 
   if (currentView === 'auth') {
-    return <Auth onBackToHome={handleBackToHome} onSuccess={handleAuthSuccess} />;
+    return <Auth onBackToHome={handleBackToHome} onSuccess={() => setCurrentView('home')} />;
   }
 
   if (currentView === 'checkout') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="container mx-auto px-6 py-8">
-          <Checkout onBackToCart={() => setCurrentView('cart')} onOrderComplete={handleOrderComplete} />
+          <Checkout onBackToCart={() => setCurrentView('cart')} onOrderComplete={() => setCurrentView('order-complete')} />
         </div>
       </div>
     );
@@ -134,7 +135,7 @@ const Index = () => {
           <CardContent className="space-y-4">
             <div className="text-6xl">🎉</div>
             <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
-            <p className="text-gray-600">Thank you for choosing eco-friendly products. Your order will be delivered in 2-3 business days.</p>
+            <p className="text-gray-600">Thank you for choosing eco-friendly Indian products. Your order will be delivered in 2-3 business days.</p>
             <div className="text-green-600 font-medium">🌱 You've saved 2.5kg CO2 with this order!</div>
           </CardContent>
         </Card>
@@ -154,10 +155,10 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
-                  EcoCart
+                  EcoCart India
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Eco-Friendly Shopping Platform
+                  Eco-Friendly Indian Products
                 </p>
               </div>
             </div>
@@ -173,7 +174,7 @@ const Index = () => {
               </Button>
 
               <Button
-                onClick={handleViewCart}
+                onClick={() => setCurrentView('cart')}
                 variant="outline"
                 className="flex items-center space-x-2 hover:bg-green-50 relative"
               >
@@ -197,7 +198,7 @@ const Index = () => {
                   </Button>
                 </div>
               ) : (
-                <Button onClick={handleAuth} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => setCurrentView('auth')} className="bg-blue-600 hover:bg-blue-700">
                   Sign In
                 </Button>
               )}
@@ -205,7 +206,7 @@ const Index = () => {
           </div>
           
           <p className="text-center text-gray-600 mt-3 text-lg">
-            Shop eco-friendly products and discover greener alternatives
+            Discover authentic Indian eco-friendly products from trusted brands
           </p>
           
           {/* Enhanced Stats Bar */}
@@ -213,21 +214,21 @@ const Index = () => {
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                <div className="text-2xl font-bold text-green-600">200+</div>
+                <div className="text-2xl font-bold text-green-600">250+</div>
               </div>
-              <div className="text-xs text-gray-500">Products Available</div>
+              <div className="text-xs text-gray-500">Indian Products</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <Users className="h-5 w-5 text-green-600" />
-                <div className="text-2xl font-bold text-green-600">500K</div>
+                <div className="text-2xl font-bold text-green-600">10L+</div>
               </div>
-              <div className="text-xs text-gray-500">Happy Customers</div>
+              <div className="text-xs text-gray-500">Happy Indians</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <Star className="h-5 w-5 text-green-600" />
-                <div className="text-2xl font-bold text-green-600">2.3M kg</div>
+                <div className="text-2xl font-bold text-green-600">5M kg</div>
               </div>
               <div className="text-xs text-gray-500">CO2 Saved</div>
             </div>
@@ -250,6 +251,29 @@ const Index = () => {
           </div>
         )}
 
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-8 relative">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              type="text"
+              placeholder="Search for Indian products (e.g., Masala Chai, Basmati Rice, Neem Face Wash)..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
+              className="pl-10 pr-4 py-3 text-lg border-green-200 focus:border-green-400 rounded-xl"
+            />
+          </div>
+          {showSuggestions && (
+            <div className="absolute top-full left-0 right-0 z-20">
+              <SearchSuggestions 
+                onSuggestionClick={handleSuggestionClick}
+                currentSearch={searchQuery}
+              />
+            </div>
+          )}
+        </div>
+
         {/* Product Scanner - Always visible */}
         <div className="max-w-2xl mx-auto mb-8">
           <ProductScanner onProductScanned={handleProductScanned} />
@@ -266,9 +290,31 @@ const Index = () => {
               <p className="text-lg text-gray-600 mt-1">
                 by {currentProduct.brand}
               </p>
+              <div className="flex items-center justify-center space-x-2 mt-2">
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-5 w-5 ${
+                        i < currentProduct.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-lg font-semibold">{currentProduct.rating}.0</span>
+                <span className="text-gray-600">({currentProduct.reviewCount.toLocaleString()} reviews)</span>
+              </div>
             </div>
 
             <EcoScoreCard product={currentProduct} />
+
+            {/* Product Description */}
+            <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-3">About this product</h3>
+                <p className="text-gray-700">{currentProduct.description}</p>
+              </CardContent>
+            </Card>
 
             {/* Add to Cart Button */}
             <div className="text-center">
@@ -277,9 +323,16 @@ const Index = () => {
                 className="bg-green-600 hover:bg-green-700 text-lg px-8 py-3"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart - ${currentProduct.price.toFixed(2)}
+                Add to Cart - ₹{currentProduct.price.toFixed(2)}
               </Button>
             </div>
+
+            {/* Product Reviews */}
+            <ProductReviews 
+              reviews={currentProduct.reviews}
+              rating={currentProduct.rating}
+              reviewCount={currentProduct.reviewCount}
+            />
 
             {/* Eco Tip */}
             {ecoTip && (
@@ -313,19 +366,19 @@ const Index = () => {
           </div>
         )}
 
-        {/* Demo Products Grid - Only shown when no product is selected */}
+        {/* Demo Products Grid - Show filtered or all products when no product is selected */}
         {!selectedProductId && (
           <div className="mt-12">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-              Shop Eco-Friendly Products
+              {searchQuery ? `Search Results for "${searchQuery}"` : 'Authentic Indian Eco-Friendly Products'}
             </h2>
             <p className="text-center text-gray-600 mb-8">
-              Search for any product name or browse our collection below
+              {searchQuery ? `Found ${filteredProducts.length} products` : 'Discover traditional and sustainable products from across India'}
             </p>
             
             {/* Category Filters */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {['beverages', 'food', 'personal-care', 'household', 'electronics', 'snacks', 'bags', 'cleaning'].map((category) => (
+              {['beverages', 'food', 'personal-care', 'household'].map((category) => (
                 <Badge key={category} variant="outline" className="cursor-pointer hover:bg-green-50">
                   {category.replace('-', ' ')}
                 </Badge>
@@ -333,7 +386,7 @@ const Index = () => {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
+              {(searchQuery ? filteredProducts : products).map((product) => (
                 <Card 
                   key={product.id} 
                   className="bg-white/80 backdrop-blur-sm border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -352,7 +405,7 @@ const Index = () => {
                       <div>
                         <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
                         <p className="text-sm text-gray-600">{product.brand}</p>
-                        <p className="text-green-600 font-bold text-xl">${product.price.toFixed(2)}</p>
+                        <p className="text-green-600 font-bold text-xl">₹{product.price.toFixed(2)}</p>
                       </div>
                       <Badge className={`${
                         product.ecoScore === 'A' ? 'bg-green-500' :
@@ -363,6 +416,19 @@ const Index = () => {
                       } text-white font-bold`}>
                         {product.ecoScore}
                       </Badge>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-3 w-3 ${
+                            i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                      <span className="text-xs text-gray-600">({product.reviewCount})</span>
                     </div>
                     
                     <div className="text-sm space-y-1">
@@ -398,40 +464,40 @@ const Index = () => {
           </div>
         )}
 
-        {/* How It Works Section - Only show when no product is selected */}
-        {!selectedProductId && (
+        {/* How It Works Section - Only show when no product is selected and no search */}
+        {!selectedProductId && !searchQuery && (
           <div className="mt-16 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-green-100">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-              How EcoCart Works
+              How EcoCart India Works
             </h2>
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🔍</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">1. Browse & Search</h3>
-                <p className="text-gray-600">Search or scan products to see their environmental impact</p>
+                <h3 className="font-semibold text-lg mb-2">1. Discover Products</h3>
+                <p className="text-gray-600">Search for authentic Indian eco-friendly products</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">📊</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">2. See EcoScore</h3>
-                <p className="text-gray-600">Get instant ratings based on sustainability factors</p>
+                <h3 className="font-semibold text-lg mb-2">2. Check EcoScore</h3>
+                <p className="text-gray-600">View sustainability ratings and environmental impact</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⭐</span>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">3. Read Reviews</h3>
+                <p className="text-gray-600">Check authentic customer reviews and ratings</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🛒</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">3. Add to Cart</h3>
-                <p className="text-gray-600">Choose eco-friendly products and add them to your cart</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🌱</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">4. Make Impact</h3>
-                <p className="text-gray-600">Complete your purchase and help save the planet</p>
+                <h3 className="font-semibold text-lg mb-2">4. Shop Sustainably</h3>
+                <p className="text-gray-600">Add to cart and support Indian eco-friendly brands</p>
               </div>
             </div>
           </div>
