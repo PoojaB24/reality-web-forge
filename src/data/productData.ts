@@ -9,9 +9,9 @@ export interface Product {
   packaging: string;
   recyclable: boolean;
   sustainabilityFeatures: string[];
-  price: number; // Fixed: Changed from string to number
+  price: number;
   barcode?: string;
-  image: string; // Added image field
+  image: string;
 }
 
 export interface Alternative {
@@ -25,7 +25,7 @@ export interface Alternative {
 }
 
 export const products: Product[] = [
-  // Beverages (30 items)
+  // Beverages (30 items) - Fixed images to match products
   {
     id: '1',
     name: 'Plastic Water Bottle',
@@ -99,7 +99,7 @@ export const products: Product[] = [
     sustainabilityFeatures: ['Biodegradable', 'Renewable Material', 'Reusable'],
     price: 15.99,
     barcode: '5678901234567',
-    image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400'
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400'
   },
   {
     id: '6',
@@ -554,6 +554,100 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400'
   },
 
+  // Daily Essentials - Breakfast Items
+  {
+    id: '52',
+    name: 'Organic Milk',
+    brand: 'Farm Fresh',
+    ecoScore: 'B',
+    category: 'food',
+    co2Impact: '1.1kg CO2',
+    waterUsage: '5L',
+    packaging: 'Recyclable carton',
+    recyclable: true,
+    sustainabilityFeatures: ['Organic', 'Grass Fed', 'Recyclable Packaging'],
+    price: 4.49,
+    barcode: '4521478963214',
+    image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400'
+  },
+  {
+    id: '53',
+    name: 'Whole Wheat Bread',
+    brand: 'Daily Baker',
+    ecoScore: 'B',
+    category: 'food',
+    co2Impact: '0.7kg CO2',
+    waterUsage: '3L',
+    packaging: 'Paper bag',
+    recyclable: true,
+    sustainabilityFeatures: ['Whole Grain', 'No Preservatives', 'Local Grain'],
+    price: 3.99,
+    barcode: '7896321450147',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400'
+  },
+  {
+    id: '54',
+    name: 'Organic Butter',
+    brand: 'Cream & Co',
+    ecoScore: 'C',
+    category: 'food',
+    co2Impact: '2.3kg CO2',
+    waterUsage: '12L',
+    packaging: 'Paper wrapper',
+    recyclable: true,
+    sustainabilityFeatures: ['Organic', 'Grass Fed', 'Traditional Churning'],
+    price: 5.99,
+    barcode: '3214569870125',
+    image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400'
+  },
+
+  // Kitchen Essentials
+  {
+    id: '58',
+    name: 'Organic Rice - 2kg',
+    brand: 'Grain Harvest',
+    ecoScore: 'A',
+    category: 'food',
+    co2Impact: '0.9kg CO2',
+    waterUsage: '4L',
+    packaging: 'Paper bag',
+    recyclable: true,
+    sustainabilityFeatures: ['Organic', 'Locally Sourced', 'Fair Trade'],
+    price: 7.99,
+    barcode: '1470258369741',
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
+  },
+  {
+    id: '59',
+    name: 'Cooking Oil - Olive',
+    brand: 'Mediterranean Gold',
+    ecoScore: 'B',
+    category: 'food',
+    co2Impact: '1.4kg CO2',
+    waterUsage: '6L',
+    packaging: 'Glass bottle',
+    recyclable: true,
+    sustainabilityFeatures: ['Cold Pressed', 'Glass Bottle', 'Organic'],
+    price: 12.99,
+    barcode: '2580369147852',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  {
+    id: '60',
+    name: 'Sea Salt',
+    brand: 'Ocean Pure',
+    ecoScore: 'A',
+    category: 'food',
+    co2Impact: '0.1kg CO2',
+    waterUsage: '0.3L',
+    packaging: 'Paper container',
+    recyclable: true,
+    sustainabilityFeatures: ['Natural', 'Unrefined', 'Minimal Processing'],
+    price: 2.99,
+    barcode: '3691472580369',
+    image: 'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?w=400'
+  },
+
   // Personal Care (25 items)
   {
     id: '14',
@@ -613,9 +707,38 @@ export const products: Product[] = [
     sustainabilityFeatures: ['Organic Ingredients', 'Cruelty Free', 'Glass Packaging'],
     price: 24.99,
     barcode: '4702581470369',
+    image: 'https://images.uns plash.com/photo-1556228578-8c89e6adf883?w=400'
+  },
+  {
+    id: '55',
+    name: 'Natural Soap Bar',
+    brand: 'Pure Clean',
+    ecoScore: 'A',
+    category: 'personal-care',
+    co2Impact: '0.2kg CO2',
+    waterUsage: '0.8L',
+    packaging: 'Paper wrapper',
+    recyclable: true,
+    sustainabilityFeatures: ['Biodegradable', 'No Chemicals', 'Zero Plastic'],
+    price: 3.99,
+    barcode: '9630852741963',
     image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400'
   },
-  // ... continuing with more personal care items to reach 25 total
+  {
+    id: '56',
+    name: 'Organic Toothpaste',
+    brand: 'Smile Natural',
+    ecoScore: 'B',
+    category: 'personal-care',
+    co2Impact: '0.4kg CO2',
+    waterUsage: '1.5L',
+    packaging: 'Recyclable tube',
+    recyclable: true,
+    sustainabilityFeatures: ['Fluoride Free', 'Natural Ingredients', 'Recyclable Tube'],
+    price: 6.99,
+    barcode: '7418529630852',
+    image: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400'
+  },
 
   // Household (25 items) 
   {
@@ -648,7 +771,21 @@ export const products: Product[] = [
     barcode: '2580147036925',
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'
   },
-  // ... continuing with more household items to reach 25 total
+  {
+    id: '57',
+    name: 'Toilet Paper - Recycled',
+    brand: 'Soft & Green',
+    ecoScore: 'A',
+    category: 'household',
+    co2Impact: '0.3kg CO2',
+    waterUsage: '1L',
+    packaging: 'Paper packaging',
+    recyclable: true,
+    sustainabilityFeatures: ['100% Recycled', 'Plastic Free', 'Biodegradable'],
+    price: 8.99,
+    barcode: '8529630741852',
+    image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400'
+  },
 
   // Electronics (25 items)
   {
@@ -681,7 +818,6 @@ export const products: Product[] = [
     barcode: '1472583691470',
     image: 'https://images.unsplash.com/photo-1609592837222-70ce4865ba90?w=400'
   },
-  // ... continuing with more electronics items to reach 25 total
 
   // Bags (25 items)
   {
@@ -729,7 +865,6 @@ export const products: Product[] = [
     barcode: '9012345678901',
     image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400'
   },
-  // ... continuing with more bag items to reach 25 total
 
   // Snacks (25 items)
   {
@@ -762,7 +897,6 @@ export const products: Product[] = [
     barcode: '1470369258147',
     image: 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400'
   },
-  // ... continuing with more snack items to reach 25 total
 
   // Cleaning (25 items)
   {

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +7,7 @@ import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp, Shoppi
 import ProductScanner from '@/components/ProductScanner';
 import EcoScoreCard from '@/components/EcoScoreCard';
 import AlternativeSuggestions from '@/components/AlternativeSuggestions';
+import MoreLikeThis from '@/components/MoreLikeThis';
 import HelpPage from '@/components/HelpPage';
 import Cart from '@/components/Cart';
 import Auth from '@/components/Auth';
@@ -301,6 +303,13 @@ const Index = () => {
             <AlternativeSuggestions 
               alternatives={alternatives} 
               onSelectAlternative={handleSelectAlternative}
+            />
+
+            {/* More Like This Section */}
+            <MoreLikeThis 
+              currentProduct={currentProduct}
+              allProducts={products}
+              onSelectProduct={setSelectedProductId}
             />
           </div>
         )}
