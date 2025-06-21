@@ -10,7 +10,7 @@ import HelpPage from '@/components/HelpPage';
 import Cart from '@/components/Cart';
 import Auth from '@/components/Auth';
 import Checkout from '@/components/Checkout';
-import { products, alternativesMap, ecoTips } from '@/data/productData';
+import { products, alternativesMap, ecoTips, type Product } from '@/data/productData';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -41,7 +41,7 @@ const Index = () => {
     setSelectedProductId(alternativeId);
   };
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = (product: Product) => {
     addToCart({
       id: product.id,
       name: product.name,

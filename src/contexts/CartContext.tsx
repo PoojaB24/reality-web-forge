@@ -5,7 +5,7 @@ export interface CartItem {
   id: string;
   name: string;
   brand: string;
-  price: number; // Changed from string to number to match Product interface
+  price: number;
   ecoScore: 'A' | 'B' | 'C' | 'D' | 'E';
   quantity: number;
 }
@@ -18,6 +18,7 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+  total: number; // Add this for backward compatibility with Checkout
   itemCount: number;
 }
 
@@ -73,6 +74,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearCart,
       totalItems,
       totalPrice,
+      total: totalPrice, // Provide total as alias for totalPrice
       itemCount
     }}>
       {children}
