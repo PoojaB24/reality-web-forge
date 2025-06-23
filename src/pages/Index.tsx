@@ -19,6 +19,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import DeliveryTracking from '@/components/DeliveryTracking';
+import SalesOffers from '@/components/SalesOffers';
 
 type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complete';
 
@@ -230,6 +231,13 @@ const Index = () => {
         <div className="max-w-2xl mx-auto mb-8">
           <ProductScanner onProductScanned={handleProductScanned} />
         </div>
+
+        {/* Sales and Offers Section - Show when no product is selected */}
+        {!selectedProductId && !searchQuery && (
+          <div className="mb-12">
+            <SalesOffers onProductClick={setSelectedProductId} />
+          </div>
+        )}
 
         {/* Product Details */}
         {currentProduct && (
