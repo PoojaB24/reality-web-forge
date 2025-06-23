@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,15 +34,30 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
     cardholderName: user?.name || '',
   });
 
+  // Calculate estimated delivery date (2-3 business days)
+  const getEstimatedDelivery = () => {
+    const today = new Date();
+    const deliveryDate = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000); // 2 days
+    return deliveryDate.toLocaleDateString('en-IN', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
     
     // Simulate order processing
     await new Promise(resolve => setTimeout(resolve, 2000));
     
+    // Generate order ID
+    const orderId = `ECO${Date.now().toString().slice(-6)}`;
+    
     toast({
       title: "Order Placed Successfully!",
-      description: `Your order of ${items.length} items has been confirmed.`,
+      description: `Order ${orderId} confirmed. Estimated delivery: ${getEstimatedDelivery()}`,
     });
     
     clearCart();
@@ -52,6 +66,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
   };
 
   const finalTotal = Math.max(0, total - 5);
+  const estimatedDelivery = getEstimatedDelivery();
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -180,6 +195,31 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Delivery Information */}
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-green-800">
+                <Truck className="h-5 w-5" />
+                <span>Delivery Information</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-gray-600">Estimated Delivery</div>
+                  <div className="font-semibold text-green-600">{estimatedDelivery}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Delivery Method</div>
+                  <div className="font-semibold">Eco-Friendly Delivery</div>
+                </div>
+              </div>
+              <div className="text-sm text-green-700">
+                🌱 Carbon-neutral delivery • Biodegradable packaging • Support local delivery partners
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Order Summary */}
@@ -193,7 +233,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span className="truncate">{item.name} × {item.quantity}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -203,7 +243,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -211,12 +251,12 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
                 </div>
                 <div className="flex justify-between">
                   <span>Eco Bonus</span>
-                  <span className="text-green-600">-$5.00</span>
+                  <span className="text-green-600">-₹5.00</span>
                 </div>
                 <hr />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span className="text-green-600">${finalTotal.toFixed(2)}</span>
+                  <span className="text-green-600">₹{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -226,13 +266,13 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
                   disabled={isProcessing}
                   className="w-full bg-green-600 hover:bg-green-700 text-lg py-3"
                 >
-                  {isProcessing ? 'Processing...' : `Place Order - $${finalTotal.toFixed(2)}`}
+                  {isProcessing ? 'Processing...' : `Place Order - ₹${finalTotal.toFixed(2)}`}
                 </Button>
                 
                 <div className="text-center space-y-2">
                   <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
                     <Truck className="h-4 w-4" />
-                    <span>Free delivery in 2-3 business days</span>
+                    <span>Delivery by {estimatedDelivery}</span>
                   </div>
                   <p className="text-xs text-green-600">
                     🌱 This order will save 2.5kg CO2 emissions

@@ -18,6 +18,7 @@ import { products, alternativesMap, ecoTips, type Product as ProductType } from 
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import DeliveryTracking from '@/components/DeliveryTracking';
 
 type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complete';
 
@@ -130,15 +131,24 @@ const Index = () => {
 
   if (currentView === 'order-complete') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
-        <Card className="max-w-md mx-auto text-center p-8">
-          <CardContent className="space-y-4">
-            <div className="text-6xl">🎉</div>
-            <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
-            <p className="text-gray-600">Thank you for choosing eco-friendly Indian products. Your order will be delivered in 2-3 business days.</p>
-            <div className="text-green-600 font-medium">🌱 You've saved 2.5kg CO2 with this order!</div>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+        <div className="container mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <Card className="text-center p-8">
+              <CardContent className="space-y-4">
+                <div className="text-6xl">🎉</div>
+                <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
+                <p className="text-gray-600">Thank you for choosing eco-friendly Indian products.</p>
+                <div className="text-green-600 font-medium">🌱 You've saved 2.5kg CO2 with this order!</div>
+                <Button onClick={handleBackToHome} className="mt-4">
+                  Continue Shopping
+                </Button>
+              </CardContent>
+            </Card>
+            
+            <DeliveryTracking />
+          </div>
+        </div>
       </div>
     );
   }
