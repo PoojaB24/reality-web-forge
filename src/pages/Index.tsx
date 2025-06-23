@@ -95,64 +95,6 @@ const Index = () => {
     }
   };
 
-  if (currentView === 'help') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
-        <div className="container mx-auto px-6 py-8">
-          <HelpPage onBackToHome={handleBackToHome} />
-        </div>
-      </div>
-    );
-  }
-
-  if (currentView === 'cart') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-        <div className="container mx-auto px-6 py-8">
-          <Cart onBackToShopping={handleBackToHome} onProceedToCheckout={() => setCurrentView('checkout')} />
-        </div>
-      </div>
-    );
-  }
-
-  if (currentView === 'auth') {
-    return <Auth onBackToHome={handleBackToHome} onSuccess={() => setCurrentView('home')} />;
-  }
-
-  if (currentView === 'checkout') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-        <div className="container mx-auto px-6 py-8">
-          <Checkout onBackToCart={() => setCurrentView('cart')} onOrderComplete={() => setCurrentView('order-complete')} />
-        </div>
-      </div>
-    );
-  }
-
-  if (currentView === 'order-complete') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-        <div className="container mx-auto px-6 py-8">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <Card className="text-center p-8">
-              <CardContent className="space-y-4">
-                <div className="text-6xl">🎉</div>
-                <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
-                <p className="text-gray-600">Thank you for choosing eco-friendly Indian products.</p>
-                <div className="text-green-600 font-medium">🌱 You've saved 2.5kg CO2 with this order!</div>
-                <Button onClick={handleBackToHome} className="mt-4">
-                  Continue Shopping
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <DeliveryTracking />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Header */}
@@ -388,7 +330,18 @@ const Index = () => {
             
             {/* Category Filters */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {['beverages', 'food', 'personal-care', 'household'].map((category) => (
+              {[
+                'beverages', 
+                'food-grains', 
+                'personal-care', 
+                'household', 
+                'textiles-clothing', 
+                'spices-condiments', 
+                'beauty-cosmetics', 
+                'ayurveda-wellness', 
+                'home-decor', 
+                'organic-health-foods'
+              ].map((category) => (
                 <Badge key={category} variant="outline" className="cursor-pointer hover:bg-green-50">
                   {category.replace('-', ' ')}
                 </Badge>
