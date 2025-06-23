@@ -66,18 +66,18 @@ const sampleReviews: Review[] = [
 ];
 
 export const products: Product[] = [
-  // Indian Beverages (50+ products)
+  // Indian Beverages (55 products)
   ...Array.from({ length: 55 }, (_, i) => {
     const beverages = [
-      { name: 'Organic Masala Chai', brand: 'Tata Tea Premium', image: 'https://images.unsplash.com/photo-1597318281675-44ad597c2b93?w=300' },
+      { name: 'Organic Masala Chai', brand: 'Tata Tea Premium', image: 'https://images.unsplash.com/photo-1571934811752-ee5a8b1b8bfb?w=300' },
       { name: 'Darjeeling Black Tea', brand: 'Goodricke', image: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=300' },
       { name: 'Green Tea with Tulsi', brand: 'Organic India', image: 'https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?w=300' },
-      { name: 'Coconut Water', brand: 'Real', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300' },
+      { name: 'Coconut Water', brand: 'Real', image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=300' },
       { name: 'Mango Lassi', brand: 'Amul', image: 'https://images.unsplash.com/photo-1553909489-cd47e0ef937f?w=300' },
       { name: 'Buttermilk Chaas', brand: 'Britannia', image: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300' },
       { name: 'Fresh Lime Water', brand: 'Patanjali', image: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=300' },
-      { name: 'Rose Milk', brand: 'Arun Ice Cream', image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300' },
-      { name: 'Badam Milk', brand: 'Nandini', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300' },
+      { name: 'Rose Milk', brand: 'Arun Ice Cream', image: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300' },
+      { name: 'Badam Milk', brand: 'Nandini', image: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300' },
       { name: 'Sugarcane Juice', brand: 'Natural', image: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=300' }
     ];
     const item = beverages[i % beverages.length];
@@ -101,7 +101,7 @@ export const products: Product[] = [
     };
   }),
 
-  // Indian Food Products (50+ products)
+  // Indian Food Products (55 products)
   ...Array.from({ length: 55 }, (_, i) => {
     const foods = [
       { name: 'Organic Basmati Rice', brand: 'India Gate', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300' },
@@ -136,7 +136,7 @@ export const products: Product[] = [
     };
   }),
 
-  // Personal Care (50+ products)
+  // Personal Care (55 products)
   ...Array.from({ length: 55 }, (_, i) => {
     const personalCare = [
       { name: 'Neem Face Wash', brand: 'Himalaya', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300' },
@@ -171,7 +171,7 @@ export const products: Product[] = [
     };
   }),
 
-  // Household Items (50+ products)
+  // Household Items (52 products)
   ...Array.from({ length: 52 }, (_, i) => {
     const household = [
       { name: 'Bamboo Toothbrush', brand: 'EcoDent', image: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=300' },
