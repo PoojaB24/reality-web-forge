@@ -8,10 +8,10 @@ interface Alternative {
   id: string;
   name: string;
   brand: string;
+  price: number;
   ecoScore: 'A' | 'B' | 'C' | 'D' | 'E';
   reason: string;
-  price?: string;
-  savings?: string;
+  image: string;
 }
 
 interface AlternativeSuggestionsProps {
@@ -58,8 +58,7 @@ const AlternativeSuggestions = ({ alternatives, onSelectAlternative }: Alternati
             
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                {alt.price && <span className="font-semibold">{alt.price}</span>}
-                {alt.savings && <span className="text-green-600 ml-2">Save {alt.savings} CO2</span>}
+                <span className="font-semibold">₹{alt.price.toFixed(2)}</span>
               </div>
               <Button 
                 size="sm" 

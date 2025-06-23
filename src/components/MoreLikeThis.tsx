@@ -70,7 +70,7 @@ const MoreLikeThis = ({ currentProduct, allProducts, onSelectProduct }: MoreLike
                 <div>
                   <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
                   <p className="text-sm text-gray-600">{product.brand}</p>
-                  <p className="text-green-600 font-bold text-xl">${product.price.toFixed(2)}</p>
+                  <p className="text-green-600 font-bold text-xl">₹{product.price.toFixed(2)}</p>
                 </div>
                 <Badge className={`${
                   product.ecoScore === 'A' ? 'bg-green-500' :
