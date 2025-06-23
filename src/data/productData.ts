@@ -1,9 +1,10 @@
+
 export interface Product {
   id: string;
   name: string;
   brand: string;
   price: number;
-  ecoScore: 'A' | 'B' | 'C' | 'D' | 'F';
+  ecoScore: 'A' | 'B' | 'C' | 'D' | 'E';
   co2Impact: string;
   packaging: string;
   recyclable: boolean;
@@ -13,6 +14,8 @@ export interface Product {
   rating: number;
   reviewCount: number;
   description: string;
+  waterUsage: string;
+  sustainabilityFeatures: string[];
 }
 
 export interface Review {
@@ -29,7 +32,7 @@ export interface Alternative {
   name: string;
   brand: string;
   price: number;
-  ecoScore: 'A' | 'B' | 'C' | 'D' | 'F';
+  ecoScore: 'A' | 'B' | 'C' | 'D' | 'E';
   reason: string;
   image: string;
 }
@@ -92,7 +95,9 @@ export const products: Product[] = [
       reviews: sampleReviews.slice(0, Math.floor(Math.random() * 3) + 1),
       rating: Math.floor(Math.random() * 2) + 4,
       reviewCount: Math.floor(Math.random() * 500) + 50,
-      description: `Authentic Indian ${item.name.toLowerCase()} made with traditional methods and premium ingredients.`
+      description: `Authentic Indian ${item.name.toLowerCase()} made with traditional methods and premium ingredients.`,
+      waterUsage: `${(Math.random() * 50 + 10).toFixed(0)}L`,
+      sustainabilityFeatures: ['Organic Certified', 'Fair Trade', 'Locally Sourced'].slice(0, Math.floor(Math.random() * 3) + 1)
     };
   }),
 
@@ -125,7 +130,9 @@ export const products: Product[] = [
       reviews: sampleReviews.slice(0, Math.floor(Math.random() * 3) + 1),
       rating: Math.floor(Math.random() * 2) + 4,
       reviewCount: Math.floor(Math.random() * 800) + 100,
-      description: `Premium quality ${item.name.toLowerCase()} sourced directly from Indian farmers using traditional methods.`
+      description: `Premium quality ${item.name.toLowerCase()} sourced directly from Indian farmers using traditional methods.`,
+      waterUsage: `${(Math.random() * 100 + 20).toFixed(0)}L`,
+      sustainabilityFeatures: ['Non-GMO', 'Pesticide Free', 'Traditional Farming'].slice(0, Math.floor(Math.random() * 3) + 1)
     };
   }),
 
@@ -158,7 +165,9 @@ export const products: Product[] = [
       reviews: sampleReviews.slice(0, Math.floor(Math.random() * 3) + 1),
       rating: Math.floor(Math.random() * 2) + 4,
       reviewCount: Math.floor(Math.random() * 600) + 75,
-      description: `Natural and ayurvedic ${item.name.toLowerCase()} made with traditional Indian herbs and ingredients.`
+      description: `Natural and ayurvedic ${item.name.toLowerCase()} made with traditional Indian herbs and ingredients.`,
+      waterUsage: `${(Math.random() * 30 + 5).toFixed(0)}L`,
+      sustainabilityFeatures: ['Natural Ingredients', 'Cruelty Free', 'Ayurvedic Formula'].slice(0, Math.floor(Math.random() * 3) + 1)
     };
   }),
 
@@ -191,7 +200,9 @@ export const products: Product[] = [
       reviews: sampleReviews.slice(0, Math.floor(Math.random() * 3) + 1),
       rating: Math.floor(Math.random() * 2) + 4,
       reviewCount: Math.floor(Math.random() * 400) + 30,
-      description: `Eco-friendly ${item.name.toLowerCase()} crafted by Indian artisans using sustainable materials.`
+      description: `Eco-friendly ${item.name.toLowerCase()} crafted by Indian artisans using sustainable materials.`,
+      waterUsage: `${(Math.random() * 40 + 10).toFixed(0)}L`,
+      sustainabilityFeatures: ['Handcrafted', 'Sustainable Materials', 'Zero Waste'].slice(0, Math.floor(Math.random() * 3) + 1)
     };
   })
 ];
