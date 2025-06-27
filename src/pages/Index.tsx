@@ -100,7 +100,7 @@ const Index = () => {
 
   // Render different views based on currentView state
   if (currentView === 'help') {
-    return <HelpPage />;
+    return <HelpPage onBackToHome={handleBackToHome} />;
   }
 
   if (currentView === 'cart') {
@@ -117,15 +117,15 @@ const Index = () => {
   }
 
   if (currentView === 'auth') {
-    return <Auth />;
+    return <Auth onBackToHome={handleBackToHome} onSuccess={() => setCurrentView('home')} />;
   }
 
   if (currentView === 'checkout') {
-    return <Checkout onOrderComplete={() => setCurrentView('order-complete')} />;
+    return <Checkout onBackToCart={() => setCurrentView('cart')} onOrderComplete={() => setCurrentView('order-complete')} />;
   }
 
   if (currentView === 'order-complete') {
-    return <DeliveryTracking />;
+    return <DeliveryTracking onBackToShopping={handleBackToHome} />;
   }
 
   return (

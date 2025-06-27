@@ -65,7 +65,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
     setIsProcessing(false);
   };
 
-  const finalTotal = Math.max(0, total - 5);
+  const finalTotal = Math.max(0, Number(total) - 5);
   const estimatedDelivery = getEstimatedDelivery();
 
   return (
@@ -233,7 +233,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span className="truncate">{item.name} × {item.quantity}</span>
-                    <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                    <span>₹{(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -243,7 +243,7 @@ const Checkout = ({ onBackToCart, onOrderComplete }: CheckoutProps) => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>₹{total.toFixed(2)}</span>
+                  <span>₹{Number(total).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>

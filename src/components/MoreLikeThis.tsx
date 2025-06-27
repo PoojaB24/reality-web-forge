@@ -30,7 +30,7 @@ const MoreLikeThis = ({ currentProduct, allProducts, onSelectProduct }: MoreLike
       id: product.id,
       name: product.name,
       brand: product.brand,
-      price: product.price,
+      price: product.price.toString(),
       ecoScore: product.ecoScore,
     });
     
