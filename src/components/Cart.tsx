@@ -137,6 +137,8 @@ const Cart = ({ onBackToShopping, onProceedToCheckout }: CartProps) => {
                   onClick={clearCart}
                   variant="outline" 
                   className="w-full"
+                >
+                  Clear Cart
                 </Button>
               </div>
 
