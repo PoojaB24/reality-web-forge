@@ -133,7 +133,7 @@ const Index = () => {
   }
 
   if (currentView === 'order-complete') {
-    return <DeliveryTracking onBackToShopping={handleBackToHome} />;
+    return <DeliveryTracking onBackToHome={handleBackToHome} />;
   }
 
   return (
