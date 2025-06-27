@@ -62,7 +62,7 @@ const Index = () => {
       id: product.id,
       name: product.name,
       brand: product.brand,
-      price: product.price,
+      price: product.price.toString(),
       ecoScore: product.ecoScore,
     });
     
@@ -100,7 +100,7 @@ const Index = () => {
 
   // Render different views based on currentView state
   if (currentView === 'help') {
-    return <HelpPage onBack={handleBackToHome} />;
+    return <HelpPage />;
   }
 
   if (currentView === 'cart') {
@@ -117,15 +117,15 @@ const Index = () => {
   }
 
   if (currentView === 'auth') {
-    return <Auth onBack={handleBackToHome} />;
+    return <Auth />;
   }
 
   if (currentView === 'checkout') {
-    return <Checkout onBack={() => setCurrentView('cart')} onOrderComplete={() => setCurrentView('order-complete')} />;
+    return <Checkout onOrderComplete={() => setCurrentView('order-complete')} />;
   }
 
   if (currentView === 'order-complete') {
-    return <DeliveryTracking onBackToShopping={handleBackToHome} />;
+    return <DeliveryTracking />;
   }
 
   return (

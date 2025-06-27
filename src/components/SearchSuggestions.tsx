@@ -35,12 +35,8 @@ const SearchSuggestions = ({ onSuggestionClick, currentSearch }: SearchSuggestio
     }
   }, [currentSearch]);
 
-  // Get trending suggestions from actual product names
-  const trendingSuggestions = [
-    'Organic Basmati Rice', 'Ayurvedic Products', 'Natural Face Care',
-    'Traditional Spices', 'Eco-friendly Home', 'Herbal Remedies',
-    'Masala Chai', 'Neem Products', 'Handloom Textiles', 'Coconut Oil'
-  ];
+  // Use actual product names for trending suggestions
+  const trendingSuggestions = products.slice(0, 10).map(p => p.name);
 
   if (!showTrending && filteredSuggestions.length === 0) {
     return null;
@@ -53,7 +49,7 @@ const SearchSuggestions = ({ onSuggestionClick, currentSearch }: SearchSuggestio
           <div>
             <div className="flex items-center space-x-2 mb-3">
               <TrendingUp className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-semibold text-gray-700">Trending Searches</span>
+              <span className="text-sm font-semibold text-gray-700">Trending Products</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {trendingSuggestions.map((suggestion, index) => (
@@ -72,7 +68,7 @@ const SearchSuggestions = ({ onSuggestionClick, currentSearch }: SearchSuggestio
           <div>
             <div className="flex items-center space-x-2 mb-3">
               <Search className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-semibold text-gray-700">Suggestions</span>
+              <span className="text-sm font-semibold text-gray-700">Product Suggestions</span>
             </div>
             <div className="space-y-1">
               {filteredSuggestions.map((suggestion, index) => (
