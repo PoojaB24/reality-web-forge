@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import DeliveryTracking from '@/components/DeliveryTracking';
 import SalesOffers from '@/components/SalesOffers';
 import LanguageSelector from '@/components/LanguageSelector';
+import VoiceSpeaker from '@/components/VoiceSpeaker';
 
 type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complete';
 
@@ -30,6 +32,10 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('selectedLanguage') || 'en';
+  });
   const { addToCart, itemCount } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
@@ -38,12 +44,103 @@ const Index = () => {
   const alternatives = selectedProductId ? alternativesMap[selectedProductId] || [] : [];
   const ecoTip = selectedProductId ? ecoTips[selectedProductId] : null;
 
-  // Filter products based on search query
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  // Language translations
+  const translations = {
+    en: {
+      ecoCartIndia: 'EcoCart India',
+      ecoFriendlyProducts: 'Eco-Friendly Indian Products',
+      discoverProducts: 'Discover authentic Indian eco-friendly products from trusted brands',
+      searchPlaceholder: 'Search for Indian products (e.g., Masala Chai, Basmati Rice, Neem Face Wash)...',
+      addToCart: 'Add to Cart',
+      viewDetails: 'View Details',
+      help: 'Help',
+      cart: 'Cart',
+      signIn: 'Sign In',
+      language: 'Language',
+      backToProducts: 'Back to Products',
+      aboutProduct: 'About this product',
+      categories: 'Categories',
+      allProducts: 'All Products'
+    },
+    hi: {
+      ecoCartIndia: 'इकोकार्ट भारत',
+      ecoFriendlyProducts: 'पर्यावरण अनुकूल भारतीय उत्पाद',
+      discoverProducts: 'विश्वसनीय ब्रांडों से प्रामाणिक भारतीय पर्यावरण अनुकूल उत्पादों की खोज करें',
+      searchPlaceholder: 'भारतीय उत्पादों की खोज करें (जैसे, मसाला चाय, बासमती चावल, नीम फेस वाश)...',
+      addToCart: 'कार्ट में जोड़ें',
+      viewDetails: 'विवरण देखें',
+      help: 'सहायता',
+      cart: 'कार्ट',
+      signIn: 'साइन इन करें',
+      language: 'भाषा',
+      backToProducts: 'उत्पादों पर वापस जाएं',
+      aboutProduct: 'इस उत्पाद के बारे में',
+      categories: 'श्रेणियां',
+      allProducts: 'सभी उत्पाद'
+    },
+    bn: {
+      ecoCartIndia: 'ইকোকার্ট ইন্ডিয়া',
+      ecoFriendlyProducts: 'পরিবেশবান্ধব ভারতীয় পণ্য',
+      discoverProducts: 'বিশ্বস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
+      searchPlaceholder: 'ভারতীয় পণ্য খুঁজুন (যেমন, মসলা চা, বাসমতী চাল, নিম ফেস ওয়াশ)...',
+      addToCart: 'কার্টে যোগ করুন',
+      viewDetails: 'বিস্তারিত দেখুন',
+      help: 'সাহায্য',
+      cart: 'কার্ট',
+      signIn: 'সাইন ইন করুন',
+      language: 'ভাষা',
+      backToProducts: 'পণ্যগুলিতে ফিরে যান',
+      aboutProduct: 'এই পণ্য সম্পর্কে',
+      categories: 'বিভাগ',
+      allProducts: 'সমস্ত পণ্য'
+    }
+  };
+
+  const t = translations[currentLanguage as keyof typeof translations] || translations.en;
+
+  // Categories with proper labels
+  const categories = [
+    { id: 'all', label: t.allProducts, value: '' },
+    { id: 'beverages', label: 'Beverages', value: 'beverages' },
+    { id: 'food-grains', label: 'Food & Grains', value: 'food-grains' },
+    { id: 'personal-care', label: 'Personal Care', value: 'personal-care' },
+    { id: 'household', label: 'Household', value: 'household' },
+    { id: 'textiles-clothing', label: 'Textiles & Clothing', value: 'textiles-clothing' },
+    { id: 'spices-condiments', label: 'Spices & Condiments', value: 'spices-condiments' },
+    { id: 'beauty-cosmetics', label: 'Beauty & Cosmetics', value: 'beauty-cosmetics' },
+    { id: 'ayurveda-wellness', label: 'Ayurveda & Wellness', value: 'ayurveda-wellness' },
+    { id: 'home-decor', label: 'Home Decor', value: 'home-decor' },
+    { id: 'organic-health-foods', label: 'Organic Health Foods', value: 'organic-health-foods' }
+  ];
+
+  // Filter products based on search query and category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Remove duplicates by product name and brand combination
+  const uniqueProducts = filteredProducts.filter((product, index, self) => 
+    index === self.findIndex(p => p.name === product.name && p.brand === product.brand)
   );
+
+  // Listen for language changes
+  useState(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      setCurrentLanguage(event.detail.language);
+    };
+
+    window.addEventListener('languageChange', handleLanguageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('languageChange', handleLanguageChange as EventListener);
+    };
+  }, []);
 
   const handleProductScanned = (productId: string) => {
     console.log('Product scanned in Index:', productId);
@@ -79,6 +176,7 @@ const Index = () => {
     setCurrentView('home');
     setSearchQuery('');
     setShowSuggestions(false);
+    setSelectedCategory('');
   };
 
   const handleSearchChange = (value: string) => {
@@ -104,6 +202,18 @@ const Index = () => {
     console.log('Changing view to:', view);
     setCurrentView(view);
     setShowSuggestions(false);
+  };
+
+  const handleCategoryFilter = (categoryValue: string) => {
+    setSelectedCategory(categoryValue);
+    setSelectedProductId(null);
+    setSearchQuery('');
+    
+    // Scroll to products section
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Render different views based on currentView state
@@ -133,7 +243,7 @@ const Index = () => {
   }
 
   if (currentView === 'order-complete') {
-    return <DeliveryTracking onBackToHome={handleBackToHome} />;
+    return <DeliveryTracking />;
   }
 
   return (
@@ -147,12 +257,24 @@ const Index = () => {
                 <Leaf className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
-                  EcoCart India
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Eco-Friendly Indian Products
-                </p>
+                <div className="flex items-center space-x-2">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
+                    {t.ecoCartIndia}
+                  </h1>
+                  <VoiceSpeaker 
+                    text={t.ecoCartIndia}
+                    size="sm"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <p className="text-sm text-gray-600">
+                    {t.ecoFriendlyProducts}
+                  </p>
+                  <VoiceSpeaker 
+                    text={t.ecoFriendlyProducts}
+                    size="sm"
+                  />
+                </div>
               </div>
             </div>
             
@@ -166,7 +288,7 @@ const Index = () => {
                   aria-label="Select Language"
                 >
                   <Languages className="h-4 w-4" />
-                  <span>Language</span>
+                  <span>{t.language}</span>
                 </Button>
                 {showLanguageSelector && (
                   <div className="absolute top-full right-0 mt-2 z-20">
@@ -182,7 +304,7 @@ const Index = () => {
                 aria-label="Get Help"
               >
                 <HelpCircle className="h-4 w-4" />
-                <span>Help</span>
+                <span>{t.help}</span>
               </Button>
 
               <Button
@@ -192,7 +314,7 @@ const Index = () => {
                 aria-label={`Shopping Cart with ${itemCount} items`}
               >
                 <ShoppingCart className="h-4 w-4" />
-                <span>Cart</span>
+                <span>{t.cart}</span>
                 {itemCount > 0 && (
                   <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs" aria-label={`${itemCount} items in cart`}>
                     {itemCount}
@@ -212,15 +334,21 @@ const Index = () => {
                 </div>
               ) : (
                 <Button onClick={() => handleViewChange('auth')} className="bg-blue-600 hover:bg-blue-700" aria-label="Sign in to your account">
-                  Sign In
+                  {t.signIn}
                 </Button>
               )}
             </div>
           </div>
           
-          <p className="text-center text-gray-600 mt-3 text-lg">
-            Discover authentic Indian eco-friendly products from trusted brands
-          </p>
+          <div className="flex items-center justify-center space-x-2 mt-3">
+            <p className="text-center text-gray-600 text-lg">
+              {t.discoverProducts}
+            </p>
+            <VoiceSpeaker 
+              text={t.discoverProducts}
+              size="sm"
+            />
+          </div>
           
           {/* Enhanced Stats Bar */}
           <div className="flex justify-center mt-4 space-x-8">
@@ -261,7 +389,7 @@ const Index = () => {
               aria-label="Go back to product list"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Back to Products</span>
+              <span>{t.backToProducts}</span>
             </Button>
           </div>
         )}
@@ -272,7 +400,7 @@ const Index = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" aria-hidden="true" />
             <Input
               type="text"
-              placeholder="Search for Indian products (e.g., Masala Chai, Basmati Rice, Neem Face Wash)..."
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onFocus={() => setShowSuggestions(true)}
@@ -307,9 +435,15 @@ const Index = () => {
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Product Name Display */}
             <div className="text-center mb-4">
-              <h2 className="text-3xl font-bold text-gray-800" role="heading" aria-level={2}>
-                {currentProduct.name}
-              </h2>
+              <div className="flex items-center justify-center space-x-2">
+                <h2 className="text-3xl font-bold text-gray-800" role="heading" aria-level={2}>
+                  {currentProduct.name}
+                </h2>
+                <VoiceSpeaker 
+                  text={`Product: ${currentProduct.name} by ${currentProduct.brand}. Price: ₹${currentProduct.price}. Eco Score: ${currentProduct.ecoScore}.`}
+                  size="sm"
+                />
+              </div>
               <p className="text-lg text-gray-600 mt-1">
                 by {currentProduct.brand}
               </p>
@@ -344,7 +478,13 @@ const Index = () => {
             {/* Product Description */}
             <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-3">About this product</h3>
+                <div className="flex items-center space-x-2 mb-3">
+                  <h3 className="text-xl font-semibold">{t.aboutProduct}</h3>
+                  <VoiceSpeaker 
+                    text={`${t.aboutProduct}: ${currentProduct.description}`}
+                    size="sm"
+                  />
+                </div>
                 <p className="text-gray-700">{currentProduct.description}</p>
               </CardContent>
             </Card>
@@ -357,7 +497,7 @@ const Index = () => {
                 aria-label={`Add ${currentProduct.name} to cart for ₹${currentProduct.price}`}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" aria-hidden="true" />
-                Add to Cart - ₹{currentProduct.price}
+                {t.addToCart} - ₹{currentProduct.price}
               </Button>
             </div>
 
@@ -376,8 +516,14 @@ const Index = () => {
                     <div className="bg-blue-500 p-2 rounded-full">
                       <Lightbulb className="h-5 w-5 text-white" aria-hidden="true" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">💡 Eco Insight:</h3>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h3 className="font-semibold text-blue-800">💡 Eco Insight:</h3>
+                        <VoiceSpeaker 
+                          text={`Eco Insight: ${ecoTip}`}
+                          size="sm"
+                        />
+                      </div>
                       <p className="text-blue-700">{ecoTip}</p>
                     </div>
                   </div>
@@ -400,40 +546,60 @@ const Index = () => {
           </div>
         )}
 
-        {/* Demo Products Grid - Show filtered or all products when no product is selected */}
+        {/* Category Filters */}
         {!selectedProductId && (
-          <div className="mt-12">
-            <h2 className="text-3xl font-bold text-center text-gray-800 mb-4" role="heading" aria-level={2}>
-              {searchQuery ? `Search Results for "${searchQuery}"` : 'Authentic Indian Eco-Friendly Products'}
-            </h2>
-            <p className="text-center text-gray-600 mb-8">
-              {searchQuery ? `Found ${filteredProducts.length} products` : 'Discover traditional and sustainable products from across India'}
-            </p>
-            
-            {/* Category Filters */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {[
-                'beverages', 
-                'food-grains', 
-                'personal-care', 
-                'household', 
-                'textiles-clothing', 
-                'spices-condiments', 
-                'beauty-cosmetics', 
-                'ayurveda-wellness', 
-                'home-decor', 
-                'organic-health-foods'
-              ].map((category) => (
-                <Badge key={category} variant="outline" className="cursor-pointer hover:bg-green-50">
-                  {category.replace('-', ' ')}
-                </Badge>
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">{t.categories}</h3>
+              <VoiceSpeaker 
+                text={`${t.categories}. Choose from different product categories.`}
+                size="sm"
+              />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  onClick={() => handleCategoryFilter(category.value)}
+                  variant={selectedCategory === category.value ? "default" : "outline"}
+                  className={`cursor-pointer ${
+                    selectedCategory === category.value 
+                      ? 'bg-green-600 text-white' 
+                      : 'hover:bg-green-50'
+                  }`}
+                  aria-label={`Filter by ${category.label} category`}
+                >
+                  {category.label}
+                </Button>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Demo Products Grid - Show filtered or all products when no product is selected */}
+        {!selectedProductId && (
+          <div className="mt-12" id="products-section">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <h2 className="text-3xl font-bold text-center text-gray-800" role="heading" aria-level={2}>
+                {searchQuery ? `Search Results for "${searchQuery}"` : 
+                 selectedCategory ? `${categories.find(c => c.value === selectedCategory)?.label} Products` :
+                 'Authentic Indian Eco-Friendly Products'}
+              </h2>
+              <VoiceSpeaker 
+                text={`${uniqueProducts.length} products available`}
+                size="sm"
+              />
+            </div>
+            <p className="text-center text-gray-600 mb-8">
+              {searchQuery ? `Found ${uniqueProducts.length} products` : 
+               selectedCategory ? `Showing ${uniqueProducts.length} products in this category` :
+               'Discover traditional and sustainable products from across India'}
+            </p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" role="grid">
-              {(searchQuery ? filteredProducts : products).map((product) => (
+              {uniqueProducts.map((product) => (
                 <Card 
-                  key={product.id} 
+                  key={`${product.id}-${product.name}-${product.brand}`}
                   className="bg-white/80 backdrop-blur-sm border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                   role="gridcell"
                 >
@@ -448,8 +614,14 @@ const Index = () => {
                     </div>
                     
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
+                          <VoiceSpeaker 
+                            text={`${product.name} by ${product.brand}. Price: ₹${product.price}. Eco Score: ${product.ecoScore}.`}
+                            size="sm"
+                          />
+                        </div>
                         <p className="text-sm text-gray-600">{product.brand}</p>
                         <p className="text-green-600 font-bold text-xl" aria-label={`Price: ₹${product.price}`}>₹{product.price}</p>
                       </div>
@@ -501,7 +673,7 @@ const Index = () => {
                         className="flex-1"
                         aria-label={`View details for ${product.name}`}
                       >
-                        View Details
+                        {t.viewDetails}
                       </Button>
                       <Button
                         onClick={() => handleAddToCart(product)}
@@ -509,7 +681,7 @@ const Index = () => {
                         aria-label={`Add ${product.name} to cart for ₹${product.price}`}
                       >
                         <ShoppingCart className="h-4 w-4 mr-1" aria-hidden="true" />
-                        Add
+                        {t.addToCart}
                       </Button>
                     </div>
                     
@@ -524,7 +696,7 @@ const Index = () => {
         )}
 
         {/* How It Works Section - Only show when no product is selected and no search */}
-        {!selectedProductId && !searchQuery && (
+        {!selectedProductId && !searchQuery && !selectedCategory && (
           <div className="mt-16 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-green-100">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8" role="heading" aria-level={2}>
               How EcoCart India Works
