@@ -5,7 +5,7 @@ export interface CartItem {
   id: string;
   name: string;
   brand: string;
-  price: number;
+  price: string;
   ecoScore: 'A' | 'B' | 'C' | 'D' | 'E';
   quantity: number;
 }
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setItems([]);
   };
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (

@@ -89,12 +89,44 @@ const Index = () => {
     setShowSuggestions(false);
     // Auto-search for the suggestion
     const matchedProduct = products.find(p => 
-      p.name.toLowerCase().includes(suggestion.toLowerCase())
+      p.name.toLowerCase().includes(suggestion.toLowerCase()) ||
+      p.brand.toLowerCase().includes(suggestion.toLowerCase()) ||
+      p.category.toLowerCase().includes(suggestion.toLowerCase())
     );
     if (matchedProduct) {
       setSelectedProductId(matchedProduct.id);
     }
   };
+
+  // Render different views based on currentView state
+  if (currentView === 'help') {
+    return <HelpPage onBack={handleBackToHome} />;
+  }
+
+  if (currentView === 'cart') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+        <div className="container mx-auto px-6 py-8">
+          <Cart 
+            onBackToShopping={() => setCurrentView('home')} 
+            onProceedToCheckout={() => setCurrentView('checkout')} 
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'auth') {
+    return <Auth onBack={handleBackToHome} />;
+  }
+
+  if (currentView === 'checkout') {
+    return <Checkout onBack={() => setCurrentView('cart')} onOrderComplete={() => setCurrentView('order-complete')} />;
+  }
+
+  if (currentView === 'order-complete') {
+    return <DeliveryTracking onBackToShopping={handleBackToHome} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
@@ -283,7 +315,7 @@ const Index = () => {
                 className="bg-green-600 hover:bg-green-700 text-lg px-8 py-3"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart - ₹{currentProduct.price.toFixed(2)}
+                Add to Cart - ₹{currentProduct.price}
               </Button>
             </div>
 
@@ -376,7 +408,7 @@ const Index = () => {
                       <div>
                         <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
                         <p className="text-sm text-gray-600">{product.brand}</p>
-                        <p className="text-green-600 font-bold text-xl">₹{product.price.toFixed(2)}</p>
+                        <p className="text-green-600 font-bold text-xl">₹{product.price}</p>
                       </div>
                       <Badge className={`${
                         product.ecoScore === 'A' ? 'bg-green-500' :

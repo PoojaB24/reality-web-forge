@@ -72,7 +72,7 @@ const Cart = ({ onBackToShopping, onProceedToCheckout }: CartProps) => {
                   </div>
                   
                   <div className="text-right">
-                    <p className="text-xl font-bold text-green-600">₹{item.price.toFixed(2)}</p>
+                    <p className="text-xl font-bold text-green-600">₹{parseFloat(item.price).toFixed(2)}</p>
                     <div className="flex items-center space-x-2 mt-2">
                       <Button
                         size="sm"
@@ -137,8 +137,6 @@ const Cart = ({ onBackToShopping, onProceedToCheckout }: CartProps) => {
                   onClick={clearCart}
                   variant="outline" 
                   className="w-full"
-                >
-                  Clear Cart
                 </Button>
               </div>
 

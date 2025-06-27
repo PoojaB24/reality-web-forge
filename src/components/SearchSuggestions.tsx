@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search, TrendingUp } from 'lucide-react';
-import { searchSuggestions } from '@/data/productData';
+import { products } from '@/data/productData';
 
 interface SearchSuggestionsProps {
   onSuggestionClick: (suggestion: string) => void;
@@ -14,6 +14,13 @@ interface SearchSuggestionsProps {
 const SearchSuggestions = ({ onSuggestionClick, currentSearch }: SearchSuggestionsProps) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [showTrending, setShowTrending] = useState(true);
+
+  // Generate search suggestions from actual product data
+  const searchSuggestions = [
+    ...products.slice(0, 20).map(p => p.name),
+    ...products.slice(0, 10).map(p => p.brand),
+    ...Array.from(new Set(products.map(p => p.category))),
+  ];
 
   useEffect(() => {
     if (currentSearch && currentSearch.length > 0) {
@@ -28,9 +35,11 @@ const SearchSuggestions = ({ onSuggestionClick, currentSearch }: SearchSuggestio
     }
   }, [currentSearch]);
 
+  // Get trending suggestions from actual product names
   const trendingSuggestions = [
     'Organic Basmati Rice', 'Ayurvedic Products', 'Natural Face Care',
-    'Traditional Spices', 'Eco-friendly Home', 'Herbal Remedies'
+    'Traditional Spices', 'Eco-friendly Home', 'Herbal Remedies',
+    'Masala Chai', 'Neem Products', 'Handloom Textiles', 'Coconut Oil'
   ];
 
   if (!showTrending && filteredSuggestions.length === 0) {

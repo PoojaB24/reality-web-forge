@@ -18,10 +18,11 @@ const ProductScanner = ({ onProductScanned }: ProductScannerProps) => {
     console.log('Search triggered with query:', searchQuery);
     
     if (searchQuery.trim()) {
-      // Search through actual products by name or brand
+      // Search through actual products by name, brand, or category
       const foundProduct = products.find(product => 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchQuery.toLowerCase())
+        product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
       
       console.log('Found product:', foundProduct);
@@ -31,12 +32,24 @@ const ProductScanner = ({ onProductScanned }: ProductScannerProps) => {
         setSearchQuery('');
         console.log('Product scanned with ID:', foundProduct.id);
       } else {
-        // If no exact match, try a partial match or return a random product for demo
-        const mockResults = products.map(p => p.id);
-        const randomProduct = mockResults[Math.floor(Math.random() * mockResults.length)];
-        onProductScanned(randomProduct);
-        setSearchQuery('');
-        console.log('No exact match found, using random product ID:', randomProduct);
+        // If no exact match, find partial matches
+        const partialMatches = products.filter(product =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        
+        if (partialMatches.length > 0) {
+          onProductScanned(partialMatches[0].id);
+          setSearchQuery('');
+          console.log('Partial match found, using product ID:', partialMatches[0].id);
+        } else {
+          // Return a random product for demo purposes
+          const randomProduct = products[Math.floor(Math.random() * products.length)];
+          onProductScanned(randomProduct.id);
+          setSearchQuery('');
+          console.log('No match found, using random product ID:', randomProduct.id);
+        }
       }
     }
   };
@@ -47,11 +60,10 @@ const ProductScanner = ({ onProductScanned }: ProductScannerProps) => {
     
     // Mock barcode scan - in real app would use camera API
     setTimeout(() => {
-      const mockBarcodes = products.map(p => p.id);
-      const scannedProduct = mockBarcodes[Math.floor(Math.random() * mockBarcodes.length)];
-      onProductScanned(scannedProduct);
+      const randomProduct = products[Math.floor(Math.random() * products.length)];
+      onProductScanned(randomProduct.id);
       setIsScanning(false);
-      console.log('Barcode scan completed with product ID:', scannedProduct);
+      console.log('Barcode scan completed with product ID:', randomProduct.id);
     }, 2000);
   };
 
@@ -66,7 +78,7 @@ const ProductScanner = ({ onProductScanned }: ProductScannerProps) => {
       <CardContent className="space-y-4">
         <div className="flex space-x-2">
           <Input
-            placeholder="Try: 'water bottle', 'coffee cup', 'plastic bag'..."
+            placeholder="Try: 'basmati rice', 'neem face wash', 'masala chai'..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
