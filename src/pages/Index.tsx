@@ -1,364 +1,331 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Leaf, Lightbulb, ArrowLeft, HelpCircle, Star, Users, TrendingUp, ShoppingCart, User, LogOut, Search, Languages } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, ShoppingCart, User, Bell, Globe, Mic, MicOff, Volume2, Star, Heart, Filter, Zap, Leaf, Recycle, Droplets, Sun, Wind, TreePine, Package, Truck, CreditCard, MapPin, Clock, Phone, Mail, Facebook, Twitter, Instagram, Youtube, ChevronDown, ChevronUp, Camera, BarChart3, Award, Users, Target, Lightbulb, Smartphone, Headphones, Laptop, Gamepad2, Watch, Tv, Car, Home, Coffee, Book, Shirt, ShoppingBag, Gift, Music, Video, Image, FileText, Download, Upload, Share, Settings, Help, Info, Menu, X, Plus, Minus, Check, AlertCircle, CheckCircle, XCircle, ArrowRight, ArrowLeft, ArrowUp, ArrowDown, RefreshCw, Eye, EyeOff, Lock, Unlock, Edit, Delete, Save, Copy, Paste, Cut, Undo, Redo, Search as SearchIcon, Filter as FilterIcon, SortAsc, SortDesc, Calendar, Clock as ClockIcon, User as UserIcon, Users as UsersIcon, Star as StarIcon, Heart as HeartIcon, ShoppingCart as CartIcon } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import ProductScanner from '@/components/ProductScanner';
 import EcoScoreCard from '@/components/EcoScoreCard';
 import AlternativeSuggestions from '@/components/AlternativeSuggestions';
-import MoreLikeThis from '@/components/MoreLikeThis';
 import ProductReviews from '@/components/ProductReviews';
-import SearchSuggestions from '@/components/SearchSuggestions';
-import HelpPage from '@/components/HelpPage';
+import SalesOffers from '@/components/SalesOffers';
 import Cart from '@/components/Cart';
 import Auth from '@/components/Auth';
 import Checkout from '@/components/Checkout';
-import { products, alternativesMap, ecoTips, type Product as ProductType } from '@/data/productData';
-import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 import DeliveryTracking from '@/components/DeliveryTracking';
-import SalesOffers from '@/components/SalesOffers';
-import LanguageSelector from '@/components/LanguageSelector';
+import MoreLikeThis from '@/components/MoreLikeThis';
+import SearchSuggestions from '@/components/SearchSuggestions';
 import VoiceSpeaker from '@/components/VoiceSpeaker';
+import HelpPage from '@/components/HelpPage';
+import LanguageSelector from '@/components/LanguageSelector';
 
-type ViewState = 'home' | 'help' | 'cart' | 'auth' | 'checkout' | 'order-complete';
-
-// Complete translations for all supported languages
-const translations = {
+const languageTranslations = {
   en: {
-    ecoCartIndia: 'EcoCart India',
-    ecoFriendlyProducts: 'Eco-Friendly Indian Products',
-    discoverProducts: 'Discover authentic Indian eco-friendly products from trusted brands',
-    searchPlaceholder: 'Search for Indian products (e.g., Masala Chai, Basmati Rice, Neem Face Wash)...',
+    searchPlaceholder: 'Search for products...',
+    scanProduct: 'Scan Product',
     addToCart: 'Add to Cart',
-    viewDetails: 'View Details',
-    help: 'Help',
+    ecoScore: 'Eco-Score',
+    alternativeSuggestions: 'Alternative Suggestions',
+    productReviews: 'Product Reviews',
+    salesOffers: 'Sales Offers',
     cart: 'Cart',
-    signIn: 'Sign In',
-    language: 'Language',
-    backToProducts: 'Back to Products',
-    aboutProduct: 'About this product',
-    categories: 'Categories',
-    allProducts: 'All Products',
-    beverages: 'Beverages',
-    foodGrains: 'Food & Grains',
-    personalCare: 'Personal Care',
-    household: 'Household',
-    textilesClothing: 'Textiles & Clothing',
-    spicesCondiments: 'Spices & Condiments',
-    beautyCosmetics: 'Beauty & Cosmetics',
-    ayurvedaWellness: 'Ayurveda & Wellness',
-    homeDecor: 'Home Decor',
-    organicHealthFoods: 'Organic Health Foods',
-    searchResults: 'Search Results for',
-    foundProducts: 'Found {count} products',
-    showingProducts: 'Showing {count} products in this category',
-    authenticIndianProducts: 'Discover traditional and sustainable products from across India',
-    howItWorks: 'How EcoCart India Works',
-    discoverProductsStep: 'Search for authentic Indian eco-friendly products',
-    checkEcoScoreStep: 'View sustainability ratings and environmental impact',
-    readReviewsStep: 'Check authentic customer reviews and ratings',
-    shopSustainablyStep: 'Add to cart and support Indian eco-friendly brands',
-    indianProducts: 'Indian Products',
-    happyIndians: 'Happy Indians',
-    co2Saved: 'CO2 Saved',
-    ecoInsight: 'Eco Insight',
-    productsAvailable: 'products available',
-    addedToCart: 'Added to Cart!',
-    productAddedSuccess: 'has been added to your cart.',
-    discover: 'Discover',
-    checkEcoScore: 'Check EcoScore',
-    readReviews: 'Read Reviews',
-    shopSustainably: 'Shop Sustainably',
-    rating: 'Rating',
-    reviews: 'reviews',
-    review: 'review',
-    co2Impact: 'CO2 Impact',
-    packaging: 'Packaging',
-    recyclable: 'Recyclable',
-    yes: 'Yes',
-    no: 'No',
-    price: 'Price',
-    brand: 'Brand',
-    category: 'Category',
-    ecoScore: 'Eco Score',
-    by: 'by',
-    stars: 'stars',
-    outOf: 'out of',
-    signOut: 'Sign Out',
-    userAccount: 'User Account'
+    auth: 'Auth',
+    checkout: 'Checkout',
+    deliveryTracking: 'Delivery Tracking',
+    moreLikeThis: 'More Like This',
+    help: 'Help',
+    voiceSearch: 'Voice Search',
+    sustainabilityInfo: 'Sustainability Info',
+    productDetails: 'Product Details',
+    relatedProducts: 'Related Products',
   },
-  hi: {
-    ecoCartIndia: 'इकोकार्ट भारत',
-    ecoFriendlyProducts: 'पर्यावरण अनुकूल भारतीय उत्पाद',
-    discoverProducts: 'विश्वसनीय ब्रांडों से प्रामाणिक भारतीय पर्यावरण अनुकूल उत्पादों की खोज करें',
-    searchPlaceholder: 'भारतीय उत्पादों की खोज करें (जैसे, मसाला चाय, बासमती चावल, नीम फेस वाश)...',
-    addToCart: 'कार्ट में जोड़ें',
-    viewDetails: 'विवरण देखें',
-    help: 'सहायता',
-    cart: 'कार्ट',
-    signIn: 'साइन इन करें',
-    language: 'भाषा',
-    backToProducts: 'उत्पादों पर वापस जाएं',
-    aboutProduct: 'इस उत्पाद के बारे में',
-    categories: 'श्रेणियां',
-    allProducts: 'सभी उत्पाद',
-    beverages: 'पेय पदार्थ',
-    foodGrains: 'खाद्य और अनाज',
-    personalCare: 'व्यक्तिगत देखभाल',
-    household: 'घरेलू सामान',
-    textilesClothing: 'वस्त्र और कपड़े',
-    spicesCondiments: 'मसाले और मसालेदार चीजें',
-    beautyCosmetics: 'सौंदर्य और कॉस्मेटिक्स',
-    ayurvedaWellness: 'आयुर्वेद और कल्याण',
-    homeDecor: 'घर की सजावट',
-    organicHealthFoods: 'जैविक स्वास्थ्य खाद्य पदार्थ',
-    searchResults: 'खोज परिणाम',
-    foundProducts: '{count} उत्पाद मिले',
-    showingProducts: 'इस श्रेणी में {count} उत्पाद दिखा रहे हैं',
-    authenticIndianProducts: 'पूरे भारत से पारंपरिक और टिकाऊ उत्पादों की खोज करें',
-    howItWorks: 'इकोकार्ट भारत कैसे काम करता है',
-    discoverProductsStep: 'प्रामाणिक भारतीय पर्यावरण अनुकूल उत्पादों की खोज करें',
-    checkEcoScoreStep: 'स्थिरता रेटिंग और पर्यावरणीय प्रभाव देखें',
-    readReviewsStep: 'प्रामाणिक ग्राहक समीक्षा और रेटिंग जांचें',
-    shopSustainablyStep: 'कार्ट में जोड़ें और भारतीय पर्यावरण अनुकूल ब्रांडों का समर्थन करें',
-    indianProducts: 'भारतीय उत्पाद',
-    happyIndians: 'खुश भारतीय',
-    co2Saved: 'CO2 बचाया गया',
-    ecoInsight: 'पर्यावरण अंतर्दृष्टि',
-    productsAvailable: 'उत्पाद उपलब्ध',
-    addedToCart: 'कार्ट में जोड़ा गया!',
-    productAddedSuccess: 'आपके कार्ट में जोड़ दिया गया है।',
-    discover: 'खोजें',
-    checkEcoScore: 'इको स्कोर जांचें',
-    readReviews: 'समीक्षाएं पढ़ें',
-    shopSustainably: 'टिकाऊ खरीदारी करें',
-    rating: 'रेटिंग',
-    reviews: 'समीक्षाएं',
-    review: 'समीक्षा',
-    co2Impact: 'CO2 प्रभाव',
-    packaging: 'पैकेजिंग',
-    recyclable: 'पुनर्चक्रण योग्य',
-    yes: 'हां',
-    no: 'नहीं',
-    price: 'मूल्य',
-    brand: 'ब्रांड',
-    category: 'श्रेणी',
-    ecoScore: 'इको स्कोर',
-    by: 'द्वारा',
-    stars: 'तारे',
-    outOf: 'में से',
-    signOut: 'साइन आउट करें',
-    userAccount: 'उपयोगकर्ता खाता'
+  es: {
+    searchPlaceholder: 'Buscar productos...',
+    scanProduct: 'Escanear Producto',
+    addToCart: 'Añadir al Carrito',
+    ecoScore: 'Eco-Puntuación',
+    alternativeSuggestions: 'Sugerencias Alternativas',
+    productReviews: 'Reseñas de Productos',
+    salesOffers: 'Ofertas de Ventas',
+    cart: 'Carrito',
+    auth: 'Autenticación',
+    checkout: 'Finalizar Compra',
+    deliveryTracking: 'Seguimiento de Entrega',
+    moreLikeThis: 'Más Como Esto',
+    help: 'Ayuda',
+    voiceSearch: 'Búsqueda por Voz',
+    sustainabilityInfo: 'Información de Sostenibilidad',
+    productDetails: 'Detalles del Producto',
+    relatedProducts: 'Productos Relacionados',
   },
-  bn: {
-    ecoCartIndia: 'ইকোকার্ট ইন্ডিয়া',
-    ecoFriendlyProducts: 'পরিবেশবান্ধব ভারতীয় পণ্য',
-    discoverProducts: 'বিশ্বস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
-    searchPlaceholder: 'ভারতীয় পণ্য খুঁজুন (যেমন, মসলা চা, বাসমতী চাল, নিম ফেস ওয়াশ)...',
-    addToCart: 'কার্টে যোগ করুন',
-    viewDetails: 'বিস্তারিত দেখুন',
-    help: 'সাহায্য',
-    cart: 'কার্ট',
-    signIn: 'সাইন ইন করুন',
-    language: 'ভাষা',
-    backToProducts: 'পণ্যগুলিতে ফিরে যান',
-    aboutProduct: 'এই পণ্য সম্পর্কে',
-    categories: 'বিভাগ',
-    allProducts: 'সমস্ত পণ্য',
-    beverages: 'পানীয়',
-    foodGrains: 'খাদ্য ও শস্য',
-    personalCare: 'ব্যক্তিগত যত্ন',
-    household: 'ঘরোয়া',
-    textilesClothing: 'বস্ত্র ও পোশাক',
-    spicesCondiments: 'মশলা ও রন্ধনসামগ্রী',
-    beautyCosmetics: 'সৌন্দর্য ও প্রসাধনী',
-    ayurvedaWellness: 'আয়ুর্বেদ ও সুস্থতা',
-    homeDecor: 'ঘর সাজানো',
-    organicHealthFoods: 'জৈব স্বাস্থ্য খাবার',
-    searchResults: 'অনুসন্ধানের ফলাফল',
-    foundProducts: '{count} পণ্য পাওয়া গেছে',
-    showingProducts: 'এই বিভাগে {count} পণ্য দেখানো হচ্ছে',
-    authenticIndianProducts: 'সমগ্র ভারত থেকে ঐতিহ্যবাহী এবং টেকসই পণ্য আবিষ্কার করুন',
-    howItWorks: 'ইকোকার্ট ইন্ডিয়া কীভাবে কাজ করে',
-    discoverProductsStep: 'খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যের সন্ধান করুন',
-    checkEcoScoreStep: 'স্থায়িত্ব রেটিং এবং পরিবেশগত প্রভাব দেখুন',
-    readReviewsStep: 'খাঁটি গ্রাহক পর্যালোচনা এবং রেটিং পরীক্ষা করুন',
-    shopSustainablyStep: 'কার্টে যোগ করুন এবং ভারতীয় পরিবেশবান্ধব ব্র্যান্ডগুলিকে সমর্থন করুন',
-    indianProducts: 'ভারতীয় পণ্য',
-    happyIndians: 'খুশি ভারতীয়',
-    co2Saved: 'CO2 সাশ্রয়',
-    ecoInsight: 'পরিবেশগত অন্তর্দৃষ্টি',
-    productsAvailable: 'পণ্য উপলব্ধ',
-    addedToCart: 'কার্টে যোগ করা হয়েছে!',
-    productAddedSuccess: 'আপনার কার্টে যোগ করা হয়েছে।',
-    discover: 'আবিষ্কার',
-    checkEcoScore: 'ইকো স্কোর পরীক্ষা করুন',
-    readReviews: 'পর্যালোচনা পড়ুন',
-    shopSustainably: 'টেকসইভাবে কেনাকাটা করুন',
-    rating: 'রেটিং',
-    reviews: 'পর্যালোচনা',
-    review: 'পর্যালোচনা',
-    co2Impact: 'CO2 প্রভাব',
-    packaging: 'প্যাকেজিং',
-    recyclable: 'পুনর্ব্যবহারযোগ্য',
-    yes: 'হ্যাঁ',
-    no: 'না',
-    price: 'দাম',
-    brand: 'ব্র্যান্ড',
-    category: 'বিভাগ',
-    ecoScore: 'ইকো স্কোর',
-    by: 'দ্বারা',
-    stars: 'তারকা',
-    outOf: 'এর মধ্যে',
-    signOut: 'সাইন আউট করুন',
-    userAccount: 'ব্যবহারকারী অ্যাকাউন্ট'
+  fr: {
+    searchPlaceholder: 'Rechercher des produits...',
+    scanProduct: 'Scanner le Produit',
+    addToCart: 'Ajouter au Panier',
+    ecoScore: 'Eco-Score',
+    alternativeSuggestions: 'Suggestions Alternatives',
+    productReviews: 'Avis sur le Produit',
+    salesOffers: 'Offres de Ventes',
+    cart: 'Panier',
+    auth: 'Authentification',
+    checkout: 'Paiement',
+    deliveryTracking: 'Suivi de Livraison',
+    moreLikeThis: 'Plus de Produits Similaires',
+    help: 'Aide',
+    voiceSearch: 'Recherche Vocale',
+    sustainabilityInfo: 'Informations sur la Durabilité',
+    productDetails: 'Détails du Produit',
+    relatedProducts: 'Produits Associés',
   },
-  te: {
-    ecoCartIndia: 'ఇకోకార్ట్ ఇండియా',
-    ecoFriendlyProducts: 'పర్యావరణ అనుకూల భారతీయ ఉత్పత్తులు',
-    discoverProducts: 'విశ్వసనీయ బ్రాండ్లనుండి ప్రామాణిక భారతీయ పర్యావరణ అనుకూల ఉత్పత్తులను కనుగొనండి',
-    searchPlaceholder: 'భారతీయ ఉత్పత్తులను వెతకండి (ఉదా., మసాలా టీ, బాస్మతి రైస్, నీమ్ ఫేస్ వాష్)...',
-    addToCart: 'కార్ట్‌కు జోడించండి',
-    viewDetails: 'వివరాలను చూడండి',
-    help: 'సహాయం',
-    cart: 'కార్ట్',
-    signIn: 'సైన్ ఇన్ చేయండి',
-    language: 'భాష',
-    backToProducts: 'ఉత్పత్తులకు తిరిగి వెళ్ళండి',
-    aboutProduct: 'ఈ ఉత్పత్తి గురించి',
-    categories: 'వర్గాలు',
-    allProducts: 'అన్ని ఉత్పత్తులు',
-    beverages: 'పానీయాలు',
-    foodGrains: 'ఆహారం మరియు ధాన్యాలు',
-    personalCare: 'వ్యక్తిగత సంరక్షణ',
-    household: 'గృహోపకరణాలు',
-    textilesClothing: 'వస్త్రాలు మరియు దుస్తులు',
-    spicesCondiments: 'మసాలా వస్తువులు',
-    beautyCosmetics: 'అందం మరియు సౌందర్య సాధనాలు',
-    ayurvedaWellness: 'ఆయుర్వేదం మరియు వెల్నెస్',
-    homeDecor: 'ఇంటి అలంకరణ',
-    organicHealthFoods: 'సేంద్రీయ ఆరోగ్య ఆహారాలు',
-    searchResults: 'వెతుకులాట ఫలితాలు',
-    foundProducts: '{count} ఉత్పత్తులు కనుగొనబడ్డాయి',
-    showingProducts: 'ఈ వర్గంలో {count} ఉత్పత్తులను చూపిస్తోంది',
-    authenticIndianProducts: 'భారతదేశం అంతటి నుండి సాంప్రదాయిక మరియు స్థిరమైన ఉత్పత్తులను కనుగొనండి',
-    howItWorks: 'ఇకోకార్ట్ ఇండియా ఎలా పనిచేస్తుంది',
-    discoverProductsStep: 'ప్రామాణిక భారతీయ పర్యావరణ అనుకూల ఉత్పత్తుల కోసం వెతకండి',
-    checkEcoScoreStep: 'స్థిరత్వ రేటింగ్‌లు మరియు పర్యావరణ ప్రభావాన్ని చూడండి',
-    readReviewsStep: 'ప్రామాణిక కస్టమర్ సమీక్షలు మరియు రేటింగ్‌లను తనిఖీ చేయండి',
-    shopSustainablyStep: 'కార్ట్‌కు జోడించండి మరియు భారతీయ పర్యావరణ అనుకూల బ్రాండ్‌లకు మద్దతు ఇవ్వండి',
-    indianProducts: 'భారతీయ ఉత్పత్తులు',
-    happyIndians: 'సంతోషకరమైన భారతీయులు',
-    co2Saved: 'CO2 ఆదా చేయబడింది',
-    ecoInsight: 'పర్యావరణ అంతర్దృష్టి',
-    productsAvailable: 'ఉత్పత్తులు అందుబాటులో ఉన్నాయి',
-    addedToCart: 'కార్ట్‌కు జోడించబడింది!',
-    productAddedSuccess: 'మీ కార్ట్‌కు జోడించబడింది.',
-    discover: 'కనుగొనండి',
-    checkEcoScore: 'ఇకో స్కోర్‌ను తనిఖీ చేయండి',
-    readReviews: 'సమీక్షలను చదవండి',
-    shopSustainably: 'స్థిరంగా షాపింగ్ చేయండి',
-    rating: 'రేటింగ్',
-    reviews: 'సమీక్షలు',
-    review: 'సమీక్ష',
-    co2Impact: 'CO2 ప్రభావం',
-    packaging: 'ప్యాకేజింగ్',
-    recyclable: 'రీసైక్లింగ్ చేయదగినది',
-    yes: 'అవును',
-    no: 'లేదు',
-    price: 'ధర',
-    brand: 'బ్రాండ్',
-    category: 'వర్గం',
-    ecoScore: 'ఇకో స్కోర్',
-    by: 'ద్వారా',
-    stars: 'నక్షత్రాలు',
-    outOf: 'లో',
-    signOut: 'సైన్ అవుట్ చేయండి',
-    userAccount: 'వినియోగదారు ఖాతా'
+  de: {
+    searchPlaceholder: 'Produkte suchen...',
+    scanProduct: 'Produkt scannen',
+    addToCart: 'Zum Warenkorb hinzufügen',
+    ecoScore: 'Öko-Score',
+    alternativeSuggestions: 'Alternative Vorschläge',
+    productReviews: 'Produktbewertungen',
+    salesOffers: 'Verkaufsangebote',
+    cart: 'Warenkorb',
+    auth: 'Authentifizierung',
+    checkout: 'Kasse',
+    deliveryTracking: 'Lieferverfolgung',
+    moreLikeThis: 'Mehr davon',
+    help: 'Hilfe',
+    voiceSearch: 'Sprachsuche',
+    sustainabilityInfo: 'Nachhaltigkeitsinformationen',
+    productDetails: 'Produktdetails',
+    relatedProducts: 'Verwandte Produkte',
   },
-  mr: {
-    ecoCartIndia: 'इकोकार्ट इंडिया',
-    ecoFriendlyProducts: 'पर्यावरणपूरक भारतीय उत्पादने',
-    discoverProducts: 'विश्वसनीय ब्रँडमधून अस्सल भारतीय पर्यावरणपूरक उत्पादने शोधा',
-    searchPlaceholder: 'भारतीय उत्पादने शोधा (उदा., मसाला चहा, बासमती तांदूळ, कडुनिंब फेस वॉश)...',
-    addToCart: 'कार्टमध्ये जोडा',
-    viewDetails: 'तपशील पहा',
-    help: 'मदत',
-    cart: 'कार्ट',
-    signIn: 'साइन इन करा',
-    language: 'भाषा',
-    backToProducts: 'उत्पादनांकडे परत जा',
-    aboutProduct: 'या उत्पादनाबद्दल',
-    categories: 'श्रेणी',
-    allProducts: 'सर्व उत्पादने',
-    beverages: 'पेये',
-    foodGrains: 'अन्न आणि धान्य',
-    personalCare: 'व्यक्तिगत काळजी',
-    household: 'घरगुती',
-    textilesClothing: 'वस्त्र आणि कपडे',
-    spicesCondiments: 'मसाले आणि चटण्या',
-    beautyCosmetics: 'सौंदर्य आणि सौंदर्यप्रसाधने',
-    ayurvedaWellness: 'आयुर्वेद आणि निरोगीपणा',
-    homeDecor: 'घर सजावट',
-    organicHealthFoods: 'सेंद्रिय आरोग्य अन्न',
-    searchResults: 'शोध परिणाम',
-    foundProducts: '{count} उत्पादने सापडली',
-    showingProducts: 'या श्रेणीतील {count} उत्पादने दाखवत आहे',
-    authenticIndianProducts: 'संपूर्ण भारतातील पारंपारिक आणि टिकाऊ उत्पादने शोधा',
-    howItWorks: 'इकोकार्ट इंडिया कसे काम करते',
-    discoverProductsStep: 'अस्सल भारतीय पर्यावरणपूरक उत्पादनांचा शोध घ्या',
-    checkEcoScoreStep: 'टिकाऊपणा रेटिंग आणि पर्यावरणीय प्रभाव पहा',
-    readReviewsStep: 'अस्सल ग्राहक पुनरावलोकने आणि रेटिंग तपासा',
-    shopSustainablyStep: 'कार्टमध्ये जोडा आणि भारतीय पर्यावरणपूरक ब्रँडना पाठिंबा द्या',
-    indianProducts: 'भारतीय उत्पादने',
-    happyIndians: 'आनंदी भारतीय',
-    co2Saved: 'CO2 वाचवले',
-    ecoInsight: 'पर्यावरणीय अंतर्दृष्टी',
-    productsAvailable: 'उत्पादने उपलब्ध',
-    addedToCart: 'कार्टमध्ये जोडले!',
-    productAddedSuccess: 'तुमच्या कार्टमध्ये जोडले आहे.',
-    discover: 'शोधा',
-    checkEcoScore: 'इको स्कोर तपासा',
-    readReviews: 'पुनरावलोकने वाचा',
-    shopSustainably: 'टिकाऊ खरेदी करा',
-    rating: 'रेटिंग',
-    reviews: 'पुनरावलोकने',
-    review: 'पुनरावलोकन',
-    co2Impact: 'CO2 प्रभाव',
-    packaging: 'पॅकेजिंग',
-    recyclable: 'पुनर्वापर करण्यायोग्य',
-    yes: 'होय',
-    no: 'नाही',
-    price: 'किंमत',
-    brand: 'ब्रँड',
-    category: 'श्रेणी',
-    ecoScore: 'इको स्कोर',
-    by: 'द्वारे',
-    stars: 'तारे',
-    outOf: 'मधील',
-    signOut: 'साइन आउट करा',
-    userAccount: 'वापरकर्ता खाते'
+  zh: {
+    searchPlaceholder: '搜索产品...',
+    scanProduct: '扫描产品',
+    addToCart: '添加到购物车',
+    ecoScore: '生态评分',
+    alternativeSuggestions: '替代建议',
+    productReviews: '产品评论',
+    salesOffers: '促销优惠',
+    cart: '购物车',
+    auth: '验证',
+    checkout: '结账',
+    deliveryTracking: '配送跟踪',
+    moreLikeThis: '更多类似产品',
+    help: '帮助',
+    voiceSearch: '语音搜索',
+    sustainabilityInfo: '可持续性信息',
+    productDetails: '产品详情',
+    relatedProducts: '相关产品',
   },
-  ta: {
-    ecoCartIndia: 'ஈகோகார்ட் இந்தியா',
-    ecoFriendlyProducts: 'சுற்றுச்சூழல் நட்பு இந்திய தயாரிப்புகள்',
-    discoverProducts: 'நம்பகமான பிராண்டுகளிலிருந்து உண்மையான இந்திய சுற்றுச்சூழல் நட்பு தயாரிப்புகளைக் கண்டறியுங்கள்',
-    searchPlaceholder: 'இந்திய தயாரிப்புகளைத் தேடுங்கள் (எ.கா., மசாலா தேநீர், பாஸ்மதி அரிசி, வேப்ப முக சலவை)...',
-    addToCart: 'கார்ட்டில் சேர்க்கவும்',
-    viewDetails: 'விவரங்களைப் பார்க்கவும்',
-    help: 'உதவி',
-    cart: 'கார்ட்',
-    signIn: 'உள்நுழையவும்',
-    language: 'மொழி',
-    backToProducts: 'தயாரிப்புகளுக்குத் திரும்பவும்',
-    aboutProduct: 'இந்த தயாரிப்பு பற்றி',
-    categories: 'வகைகள்',
-    allProducts: 'அனைத்து தயாரிப்புகள்',
-    beverages: 'பானங்கள்',
-    foodGrains: 'உணவு மற்றும் தானியங்கள்',
-    personalCare: 'தனிப்பட்ட பராமரிப்பு',
-    household: 'வீட்டுப் பொருட்கள்',
-    textilesClothing: 'வஸ்
+};
+
+const Index = () => {
+  const [language, setLanguage] = useState('en');
+  const translations = languageTranslations[language];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isDeliveryTrackingOpen, setIsDeliveryTrackingOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isVoiceSearchActive, setIsVoiceSearchActive] = useState(false);
+  const [isProductScannerOpen, setIsProductScannerOpen] = useState(false);
+  const [scannedProductId, setScannedProductId] = useState(null);
+  const [ecoScore, setEcoScore] = useState(75);
+  const [productReviews, setProductReviews] = useState([
+    { id: 1, author: 'John Doe', rating: 4, comment: 'Great product!' },
+    { id: 2, author: 'Jane Smith', rating: 5, comment: 'Highly recommended.' },
+  ]);
+  const [salesOffers, setSalesOffers] = useState([
+    { id: 1, product: 'Eco-Friendly Bottle', discount: '20%' },
+    { id: 2, product: 'Organic Cotton T-Shirt', discount: '15%' },
+  ]);
+  const [alternativeSuggestions, setAlternativeSuggestions] = useState([
+    { id: 1, name: 'Reusable Coffee Cup', ecoScore: 85 },
+    { id: 2, name: 'Bamboo Toothbrush', ecoScore: 90 },
+  ]);
+  const [moreLikeThis, setMoreLikeThis] = useState([
+    { id: 1, name: 'Sustainable Yoga Mat', ecoScore: 80 },
+    { id: 2, name: 'Organic Cotton Tote Bag', ecoScore: 88 },
+  ]);
+  const [searchSuggestions, setSearchSuggestions] = useState([
+    'Organic Food',
+    'Recycled Paper',
+    'Solar Panels',
+  ]);
+  const { cart, addToCart } = useCart();
+  const { isLoggedIn, user, login, logout } = useAuth();
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isVoiceSearchActive) {
+      toast.info('Voice search is active. Speak now!', { duration: 5000 });
+    }
+  }, [isVoiceSearchActive]);
+
+  const handleAddToCart = (productId) => {
+    addToCart(productId, 1);
+    toast.success('Product added to cart!');
+  };
+
+  const handleSearch = () => {
+    if (searchQuery) {
+      toast.info(`Searching for: ${searchQuery}`);
+    } else {
+      toast.warning('Please enter a search query.');
+    }
+  };
+
+  const toggleVoiceSearch = () => {
+    setIsVoiceSearchActive(!isVoiceSearchActive);
+  };
+
+  const handleScanProduct = () => {
+    setIsProductScannerOpen(true);
+  };
+
+  const handleProductScanned = (productId) => {
+    setScannedProductId(productId);
+    setIsProductScannerOpen(false);
+    toast.success(`Product ID scanned: ${productId}`);
+  };
+
+  const handleOpenCart = () => setIsCartOpen(true);
+  const handleCloseCart = () => setIsCartOpen(false);
+  const handleOpenAuth = () => setIsAuthOpen(true);
+  const handleCloseAuth = () => setIsAuthOpen(false);
+  const handleOpenCheckout = () => setIsCheckoutOpen(true);
+  const handleCloseCheckout = () => setIsCheckoutOpen(false);
+  const handleOpenDeliveryTracking = () => setIsDeliveryTrackingOpen(true);
+  const handleCloseDeliveryTracking = () => setIsDeliveryTrackingOpen(false);
+  const handleOpenHelp = () => setIsHelpOpen(true);
+  const handleCloseHelp = () => setIsHelpOpen(false);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <header className="bg-white shadow-md">
+        <div className="container mx-auto py-4 px-5 flex items-center justify-between">
+          <div className="flex items-center">
+            <a href="/" className="text-2xl font-bold text-green-600">EcoCart</a>
+          </div>
+          <div className="flex items-center">
+            <div className="relative mr-4">
+              <Input
+                type="text"
+                placeholder={translations.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                ref={searchInputRef}
+                className="pr-10"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSearch}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2"
+              >
+                <SearchIcon className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleScanProduct} className="mr-2">
+              {translations.scanProduct}
+            </Button>
+            <IconButton onClick={toggleVoiceSearch} className="mr-2">
+              {isVoiceSearchActive ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            </IconButton>
+            <IconButton onClick={handleOpenCart}>
+              <CartIcon className="h-5 w-5" />
+              {cart.length > 0 && (
+                <Badge className="absolute top-0 right-0 rounded-full bg-red-500 text-white text-xs p-1">
+                  {cart.length}
+                </Badge>
+              )}
+            </IconButton>
+            <LanguageSelector setLanguage={setLanguage} />
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="ml-2">
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    {user.name}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleOpenCheckout}>Checkout</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenDeliveryTracking}>Delivery Tracking</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenHelp}>Help</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="outline" className="ml-2" onClick={handleOpenAuth}>
+                {translations.auth}
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto py-6 px-5">
+        {scannedProductId && (
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">{translations.productDetails}</h2>
+            <p>Product ID: {scannedProductId}</p>
+            <EcoScoreCard ecoScore={ecoScore} />
+          </div>
+        )}
+
+        <SearchSuggestions suggestions={searchSuggestions} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AlternativeSuggestions suggestions={alternativeSuggestions} />
+          <ProductReviews reviews={productReviews} />
+          <SalesOffers offers={salesOffers} />
+        </div>
+
+        <MoreLikeThis products={moreLikeThis} />
+      </main>
+
+      <footer className="bg-gray-100 py-4 text-center">
+        <p className="text-sm text-gray-500">
+          © {new Date().getFullYear()} EcoCart. All rights reserved.
+        </p>
+      </footer>
+
+      <ProductScanner isOpen={isProductScannerOpen} onClose={() => setIsProductScannerOpen(false)} onProductScanned={handleProductScanned} />
+      <Cart isOpen={isCartOpen} onClose={handleCloseCart} />
+      <Auth isOpen={isAuthOpen} onClose={handleCloseAuth} />
+      <Checkout isOpen={isCheckoutOpen} onClose={handleCloseCheckout} />
+      <DeliveryTracking isOpen={isDeliveryTrackingOpen} onClose={handleCloseDeliveryTracking} />
+      <HelpPage isOpen={isHelpOpen} onClose={handleCloseHelp} />
+    </div>
+  );
+};
+
+export default Index;
+
+const IconButton = ({ children, ...props }) => {
+  return (
+    <Button variant="ghost" size="icon" {...props}>
+      {children}
+    </Button>
+  );
+};
