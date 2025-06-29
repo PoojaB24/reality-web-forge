@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,7 +43,7 @@ const Index = () => {
   const alternatives = selectedProductId ? alternativesMap[selectedProductId] || [] : [];
   const ecoTip = selectedProductId ? ecoTips[selectedProductId] : null;
 
-  // Language translations - Extended for complete app coverage
+  // Complete language translations for the entire app
   const translations = {
     en: {
       ecoCartIndia: 'EcoCart India',
@@ -84,7 +83,25 @@ const Index = () => {
       happyIndians: 'Happy Indians',
       co2Saved: 'CO2 Saved',
       ecoInsight: 'Eco Insight',
-      productsAvailable: 'products available'
+      productsAvailable: 'products available',
+      addedToCart: 'Added to Cart!',
+      productAddedSuccess: 'has been added to your cart.',
+      discover: 'Discover',
+      checkEcoScore: 'Check EcoScore',
+      readReviews: 'Read Reviews',
+      shopSustainably: 'Shop Sustainably',
+      rating: 'Rating',
+      reviews: 'reviews',
+      co2Impact: 'CO2 Impact',
+      packaging: 'Packaging',
+      recyclable: 'Recyclable',
+      yes: 'Yes',
+      no: 'No',
+      price: 'Price',
+      brand: 'Brand',
+      category: 'Category',
+      ecoScore: 'Eco Score',
+      by: 'by'
     },
     hi: {
       ecoCartIndia: 'इकोकार्ट भारत',
@@ -124,12 +141,30 @@ const Index = () => {
       happyIndians: 'खुश भारतीय',
       co2Saved: 'CO2 बचाया गया',
       ecoInsight: 'पर्यावरण अंतर्दृष्टि',
-      productsAvailable: 'उत्पाद उपलब्ध'
+      productsAvailable: 'उत्पाद उपलब्ध',
+      addedToCart: 'कार्ट में जोड़ा गया!',
+      productAddedSuccess: 'आपके कार्ट में जोड़ दिया गया है।',
+      discover: 'खोजें',
+      checkEcoScore: 'इको स्कोर जांचें',
+      readReviews: 'समीक्षाएं पढ़ें',
+      shopSustainably: 'टिकाऊ खरीदारी करें',
+      rating: 'रेटिंग',
+      reviews: 'समीक्षाएं',
+      co2Impact: 'CO2 प्रभाव',
+      packaging: 'पैकेजिंग',
+      recyclable: 'पुनर्चक्रण योग्य',
+      yes: 'हां',
+      no: 'नहीं',
+      price: 'मूल्य',
+      brand: 'ब्रांड',
+      category: 'श्रेणी',
+      ecoScore: 'इको स्कोर',
+      by: 'द्वारा'
     },
     bn: {
       ecoCartIndia: 'ইকোকার্ট ইন্ডিয়া',
       ecoFriendlyProducts: 'পরিবেশবান্ধব ভারতীয় পণ্য',
-      discoverProducts: 'বিশ্वস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
+      discoverProducts: 'বিশ্বস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
       searchPlaceholder: 'ভারতীয় পণ্য খুঁজুন (যেমন, মসলা চা, বাসমতী চাল, নিম ফেস ওয়াশ)...',
       addToCart: 'কার্টে যোগ করুন',
       viewDetails: 'বিস্তারিত দেখুন',
@@ -164,7 +199,25 @@ const Index = () => {
       happyIndians: 'খুশি ভারতীয়',
       co2Saved: 'CO2 সাশ্রয়',
       ecoInsight: 'পরিবেশগত অন্তর্দৃষ্টি',
-      productsAvailable: 'পণ্য উপলব্ধ'
+      productsAvailable: 'পণ্য উপলব্ধ',
+      addedToCart: 'কার্টে যোগ করা হয়েছে!',
+      productAddedSuccess: 'আপনার কার্টে যোগ করা হয়েছে।',
+      discover: 'আবিষ্কার',
+      checkEcoScore: 'ইকো স্কোর পরীক্ষা করুন',
+      readReviews: 'পর্যালোচনা পড়ুন',
+      shopSustainably: 'টেকসইভাবে কেনাকাটা করুন',
+      rating: 'রেটিং',
+      reviews: 'পর্যালোচনা',
+      co2Impact: 'CO2 প্রভাব',
+      packaging: 'প্যাকেজিং',
+      recyclable: 'পুনর্ব্যবহারযোগ্য',
+      yes: 'হ্যাঁ',
+      no: 'না',
+      price: 'দাম',
+      brand: 'ব্র্যান্ড',
+      category: 'বিভাগ',
+      ecoScore: 'ইকো স্কোর',
+      by: 'দ্বারা'
     }
   };
 
@@ -247,8 +300,8 @@ const Index = () => {
     });
     
     toast({
-      title: t.addToCart + "!",
-      description: `${product.name} has been added to your cart.`,
+      title: t.addedToCart,
+      description: `${product.name} ${t.productAddedSuccess}`,
     });
   };
 
@@ -523,12 +576,12 @@ const Index = () => {
                   {currentProduct.name}
                 </h2>
                 <VoiceSpeaker 
-                  text={`Product: ${currentProduct.name} by ${currentProduct.brand}. Price: ₹${currentProduct.price}. Eco Score: ${currentProduct.ecoScore}.`}
+                  text={`${t.brand}: ${currentProduct.name} ${t.by} ${currentProduct.brand}. ${t.price}: ₹${currentProduct.price}. ${t.ecoScore}: ${currentProduct.ecoScore}.`}
                   size="sm"
                 />
               </div>
               <p className="text-lg text-gray-600 mt-1">
-                by {currentProduct.brand}
+                {t.by} {currentProduct.brand}
               </p>
               <div className="flex items-center justify-center space-x-2 mt-2">
                 <div className="flex items-center space-x-1" role="img" aria-label={`${currentProduct.rating} out of 5 stars`}>
@@ -543,16 +596,16 @@ const Index = () => {
                   ))}
                 </div>
                 <span className="text-lg font-semibold">{currentProduct.rating}.0</span>
-                <span className="text-gray-600">({currentProduct.reviewCount.toLocaleString()} reviews)</span>
+                <span className="text-gray-600">({currentProduct.reviewCount.toLocaleString()} {t.reviews})</span>
               </div>
               <div className="sr-only">
-                Product: {currentProduct.name} by {currentProduct.brand}. 
-                Price: ₹{currentProduct.price}. 
-                Eco Score: {currentProduct.ecoScore}. 
-                Rating: {currentProduct.rating} out of 5 stars with {currentProduct.reviewCount} reviews.
-                CO2 Impact: {currentProduct.co2Impact}.
-                Packaging: {currentProduct.packaging}.
-                {currentProduct.recyclable ? 'This product is recyclable.' : 'This product is not recyclable.'}
+                {t.brand}: {currentProduct.name} {t.by} {currentProduct.brand}. 
+                {t.price}: ₹{currentProduct.price}. 
+                {t.ecoScore}: {currentProduct.ecoScore}. 
+                {t.rating}: {currentProduct.rating} out of 5 stars with {currentProduct.reviewCount} {t.reviews}.
+                {t.co2Impact}: {currentProduct.co2Impact}.
+                {t.packaging}: {currentProduct.packaging}.
+                {currentProduct.recyclable ? `${t.recyclable}: ${t.yes}` : `${t.recyclable}: ${t.no}`}
               </div>
             </div>
 
@@ -666,7 +719,7 @@ const Index = () => {
               <h2 className="text-3xl font-bold text-center text-gray-800" role="heading" aria-level={2}>
                 {searchQuery ? `${t.searchResults} "${searchQuery}"` : 
                  selectedCategory ? `${categories.find(c => c.value === selectedCategory)?.label} Products` :
-                 'Authentic Indian Eco-Friendly Products'}
+                 t.authenticIndianProducts}
               </h2>
               <VoiceSpeaker 
                 text={`${uniqueProducts.length} ${t.productsAvailable}`}
@@ -701,12 +754,12 @@ const Index = () => {
                         <div className="flex items-center space-x-2">
                           <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
                           <VoiceSpeaker 
-                            text={`${product.name} by ${product.brand}. Price: ₹${product.price}. Eco Score: ${product.ecoScore}.`}
+                            text={`${product.name} ${t.by} ${product.brand}. ${t.price}: ₹${product.price}. ${t.ecoScore}: ${product.ecoScore}.`}
                             size="sm"
                           />
                         </div>
                         <p className="text-sm text-gray-600">{product.brand}</p>
-                        <p className="text-green-600 font-bold text-xl" aria-label={`Price: ₹${product.price}`}>₹{product.price}</p>
+                        <p className="text-green-600 font-bold text-xl" aria-label={`${t.price}: ₹${product.price}`}>₹{product.price}</p>
                       </div>
                       <Badge className={`${
                         product.ecoScore === 'A' ? 'bg-green-500' :
@@ -714,7 +767,7 @@ const Index = () => {
                         product.ecoScore === 'C' ? 'bg-orange-500' :
                         product.ecoScore === 'D' ? 'bg-red-400' :
                         'bg-red-600'
-                      } text-white font-bold`} aria-label={`Eco Score: ${product.ecoScore}`}>
+                      } text-white font-bold`} aria-label={`${t.ecoScore}: ${product.ecoScore}`}>
                         {product.ecoScore}
                       </Badge>
                     </div>
@@ -735,18 +788,18 @@ const Index = () => {
 
                     {/* Screen reader content for product details */}
                     <div className="sr-only">
-                      Product: {product.name} by {product.brand}. 
-                      Price: ₹{product.price}. 
-                      Eco Score: {product.ecoScore}. 
-                      CO2 Impact: {product.co2Impact}. 
-                      Packaging: {product.packaging}. 
-                      {product.recyclable ? 'Recyclable' : 'Not recyclable'}.
+                      {t.brand}: {product.name} {t.by} {product.brand}. 
+                      {t.price}: ₹{product.price}. 
+                      {t.ecoScore}: {product.ecoScore}. 
+                      {t.co2Impact}: {product.co2Impact}. 
+                      {t.packaging}: {product.packaging}. 
+                      {product.recyclable ? `${t.recyclable}: ${t.yes}` : `${t.recyclable}: ${t.no}`}.
                     </div>
                     
                     <div className="text-sm space-y-1">
-                      <p><strong>CO2:</strong> {product.co2Impact}</p>
-                      <p><strong>Packaging:</strong> {product.packaging}</p>
-                      <p><strong>Recyclable:</strong> {product.recyclable ? '✅' : '❌'}</p>
+                      <p><strong>{t.co2Impact}:</strong> {product.co2Impact}</p>
+                      <p><strong>{t.packaging}:</strong> {product.packaging}</p>
+                      <p><strong>{t.recyclable}:</strong> {product.recyclable ? '✅' : '❌'}</p>
                     </div>
                     
                     <div className="flex gap-2 pt-2">
@@ -789,28 +842,28 @@ const Index = () => {
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">🔍</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">1. Discover Products</h3>
+                <h3 className="font-semibold text-lg mb-2">1. {t.discover}</h3>
                 <p className="text-gray-600">{t.discoverProductsStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">📊</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">2. Check EcoScore</h3>
+                <h3 className="font-semibold text-lg mb-2">2. {t.checkEcoScore}</h3>
                 <p className="text-gray-600">{t.checkEcoScoreStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">⭐</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">3. Read Reviews</h3>
+                <h3 className="font-semibold text-lg mb-2">3. {t.readReviews}</h3>
                 <p className="text-gray-600">{t.readReviewsStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">🛒</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">4. Shop Sustainably</h3>
+                <h3 className="font-semibold text-lg mb-2">4. {t.shopSustainably}</h3>
                 <p className="text-gray-600">{t.shopSustainablyStep}</p>
               </div>
             </div>
