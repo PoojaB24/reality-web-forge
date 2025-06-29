@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,7 @@ const Index = () => {
   const alternatives = selectedProductId ? alternativesMap[selectedProductId] || [] : [];
   const ecoTip = selectedProductId ? ecoTips[selectedProductId] : null;
 
-  // Language translations
+  // Language translations - Extended for complete app coverage
   const translations = {
     en: {
       ecoCartIndia: 'EcoCart India',
@@ -60,7 +60,31 @@ const Index = () => {
       backToProducts: 'Back to Products',
       aboutProduct: 'About this product',
       categories: 'Categories',
-      allProducts: 'All Products'
+      allProducts: 'All Products',
+      beverages: 'Beverages',
+      foodGrains: 'Food & Grains',
+      personalCare: 'Personal Care',
+      household: 'Household',
+      textilesClothing: 'Textiles & Clothing',
+      spicesCondiments: 'Spices & Condiments',
+      beautyCosmetics: 'Beauty & Cosmetics',
+      ayurvedaWellness: 'Ayurveda & Wellness',
+      homeDecor: 'Home Decor',
+      organicHealthFoods: 'Organic Health Foods',
+      searchResults: 'Search Results for',
+      foundProducts: 'Found {count} products',
+      showingProducts: 'Showing {count} products in this category',
+      authenticIndianProducts: 'Discover traditional and sustainable products from across India',
+      howItWorks: 'How EcoCart India Works',
+      discoverProductsStep: 'Search for authentic Indian eco-friendly products',
+      checkEcoScoreStep: 'View sustainability ratings and environmental impact',
+      readReviewsStep: 'Check authentic customer reviews and ratings',
+      shopSustainablyStep: 'Add to cart and support Indian eco-friendly brands',
+      indianProducts: 'Indian Products',
+      happyIndians: 'Happy Indians',
+      co2Saved: 'CO2 Saved',
+      ecoInsight: 'Eco Insight',
+      productsAvailable: 'products available'
     },
     hi: {
       ecoCartIndia: 'इकोकार्ट भारत',
@@ -76,12 +100,36 @@ const Index = () => {
       backToProducts: 'उत्पादों पर वापस जाएं',
       aboutProduct: 'इस उत्पाद के बारे में',
       categories: 'श्रेणियां',
-      allProducts: 'सभी उत्पाद'
+      allProducts: 'सभी उत्पाद',
+      beverages: 'पेय पदार्थ',
+      foodGrains: 'खाद्य और अनाज',
+      personalCare: 'व्यक्तिगत देखभाल',
+      household: 'घरेलू सामान',
+      textilesClothing: 'वस्त्र और कपड़े',
+      spicesCondiments: 'मसाले और मसालेदार चीजें',
+      beautyCosmetics: 'सौंदर्य और कॉस्मेटिक्स',
+      ayurvedaWellness: 'आयुर्वेद और कल्याण',
+      homeDecor: 'घर की सजावट',
+      organicHealthFoods: 'जैविक स्वास्थ्य खाद्य पदार्थ',
+      searchResults: 'खोज परिणाम',
+      foundProducts: '{count} उत्पाद मिले',
+      showingProducts: 'इस श्रेणी में {count} उत्पाद दिखा रहे हैं',
+      authenticIndianProducts: 'पूरे भारत से पारंपरिक और टिकाऊ उत्पादों की खोज करें',
+      howItWorks: 'इकोकार्ट भारत कैसे काम करता है',
+      discoverProductsStep: 'प्रामाणिक भारतीय पर्यावरण अनुकूल उत्पादों की खोज करें',
+      checkEcoScoreStep: 'स्थिरता रेटिंग और पर्यावरणीय प्रभाव देखें',
+      readReviewsStep: 'प्रामाणिक ग्राहक समीक्षा और रेटिंग जांचें',
+      shopSustainablyStep: 'कार्ट में जोड़ें और भारतीय पर्यावरण अनुकूल ब्रांडों का समर्थन करें',
+      indianProducts: 'भारतीय उत्पाद',
+      happyIndians: 'खुश भारतीय',
+      co2Saved: 'CO2 बचाया गया',
+      ecoInsight: 'पर्यावरण अंतर्दृष्टि',
+      productsAvailable: 'उत्पाद उपलब्ध'
     },
     bn: {
       ecoCartIndia: 'ইকোকার্ট ইন্ডিয়া',
       ecoFriendlyProducts: 'পরিবেশবান্ধব ভারতীয় পণ্য',
-      discoverProducts: 'বিশ্বস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
+      discoverProducts: 'বিশ্वস্ত ব্র্যান্ডগুলি থেকে খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যগুলি আবিষ্কার করুন',
       searchPlaceholder: 'ভারতীয় পণ্য খুঁজুন (যেমন, মসলা চা, বাসমতী চাল, নিম ফেস ওয়াশ)...',
       addToCart: 'কার্টে যোগ করুন',
       viewDetails: 'বিস্তারিত দেখুন',
@@ -92,25 +140,49 @@ const Index = () => {
       backToProducts: 'পণ্যগুলিতে ফিরে যান',
       aboutProduct: 'এই পণ্য সম্পর্কে',
       categories: 'বিভাগ',
-      allProducts: 'সমস্ত পণ্য'
+      allProducts: 'সমস্ত পণ্য',
+      beverages: 'পানীয়',
+      foodGrains: 'খাদ্য ও শস্য',
+      personalCare: 'ব্যক্তিগত যত্ন',
+      household: 'ঘরোয়া',
+      textilesClothing: 'বস্ত্র ও পোশাক',
+      spicesCondiments: 'মশলা ও রন্ধনসামগ্রী',
+      beautyCosmetics: 'সৌন্দর্য ও প্রসাধনী',
+      ayurvedaWellness: 'আয়ুর্বেদ ও সুস্থতা',
+      homeDecor: 'ঘর সাজানো',
+      organicHealthFoods: 'জৈব স্বাস্থ্য খাবার',
+      searchResults: 'অনুসন্ধানের ফলাফল',
+      foundProducts: '{count} পণ্য পাওয়া গেছে',
+      showingProducts: 'এই বিভাগে {count} পণ্য দেখানো হচ্ছে',
+      authenticIndianProducts: 'সমগ্র ভারত থেকে ঐতিহ্যবাহী এবং টেকসই পণ্য আবিষ্কার করুন',
+      howItWorks: 'ইকোকার্ট ইন্ডিয়া কীভাবে কাজ করে',
+      discoverProductsStep: 'খাঁটি ভারতীয় পরিবেশবান্ধব পণ্যের সন্ধান করুন',
+      checkEcoScoreStep: 'স্থায়িত্ব রেটিং এবং পরিবেশগত প্রভাব দেখুন',
+      readReviewsStep: 'খাঁটি গ্রাহক পর্যালোচনা এবং রেটিং পরীক্ষা করুন',
+      shopSustainablyStep: 'কার্টে যোগ করুন এবং ভারতীয় পরিবেশবান্ধব ব্র্যান্ডগুলিকে সমর্থন করুন',
+      indianProducts: 'ভারতীয় পণ্য',
+      happyIndians: 'খুশি ভারতীয়',
+      co2Saved: 'CO2 সাশ্রয়',
+      ecoInsight: 'পরিবেশগত অন্তর্দৃষ্টি',
+      productsAvailable: 'পণ্য উপলব্ধ'
     }
   };
 
   const t = translations[currentLanguage as keyof typeof translations] || translations.en;
 
-  // Categories with proper labels
+  // Categories with proper labels using translations
   const categories = [
     { id: 'all', label: t.allProducts, value: '' },
-    { id: 'beverages', label: 'Beverages', value: 'beverages' },
-    { id: 'food-grains', label: 'Food & Grains', value: 'food-grains' },
-    { id: 'personal-care', label: 'Personal Care', value: 'personal-care' },
-    { id: 'household', label: 'Household', value: 'household' },
-    { id: 'textiles-clothing', label: 'Textiles & Clothing', value: 'textiles-clothing' },
-    { id: 'spices-condiments', label: 'Spices & Condiments', value: 'spices-condiments' },
-    { id: 'beauty-cosmetics', label: 'Beauty & Cosmetics', value: 'beauty-cosmetics' },
-    { id: 'ayurveda-wellness', label: 'Ayurveda & Wellness', value: 'ayurveda-wellness' },
-    { id: 'home-decor', label: 'Home Decor', value: 'home-decor' },
-    { id: 'organic-health-foods', label: 'Organic Health Foods', value: 'organic-health-foods' }
+    { id: 'beverages', label: t.beverages, value: 'beverages' },
+    { id: 'food-grains', label: t.foodGrains, value: 'food-grains' },
+    { id: 'personal-care', label: t.personalCare, value: 'personal-care' },
+    { id: 'household', label: t.household, value: 'household' },
+    { id: 'textiles-clothing', label: t.textilesClothing, value: 'textiles-clothing' },
+    { id: 'spices-condiments', label: t.spicesCondiments, value: 'spices-condiments' },
+    { id: 'beauty-cosmetics', label: t.beautyCosmetics, value: 'beauty-cosmetics' },
+    { id: 'ayurveda-wellness', label: t.ayurvedaWellness, value: 'ayurveda-wellness' },
+    { id: 'home-decor', label: t.homeDecor, value: 'home-decor' },
+    { id: 'organic-health-foods', label: t.organicHealthFoods, value: 'organic-health-foods' }
   ];
 
   // Filter products based on search query and category
@@ -129,10 +201,11 @@ const Index = () => {
     index === self.findIndex(p => p.name === product.name && p.brand === product.brand)
   );
 
-  // Listen for language changes
-  useState(() => {
+  // Listen for language changes - Fixed useEffect hook
+  useEffect(() => {
     const handleLanguageChange = (event: CustomEvent) => {
       setCurrentLanguage(event.detail.language);
+      console.log('Language changed to:', event.detail.language);
     };
 
     window.addEventListener('languageChange', handleLanguageChange as EventListener);
@@ -141,6 +214,14 @@ const Index = () => {
       window.removeEventListener('languageChange', handleLanguageChange as EventListener);
     };
   }, []);
+
+  // Update language from localStorage on mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    if (savedLanguage && savedLanguage !== currentLanguage) {
+      setCurrentLanguage(savedLanguage);
+    }
+  }, [currentLanguage]);
 
   const handleProductScanned = (productId: string) => {
     console.log('Product scanned in Index:', productId);
@@ -166,7 +247,7 @@ const Index = () => {
     });
     
     toast({
-      title: "Added to Cart!",
+      title: t.addToCart + "!",
       description: `${product.name} has been added to your cart.`,
     });
   };
@@ -210,10 +291,12 @@ const Index = () => {
     setSearchQuery('');
     
     // Scroll to products section
-    const productsSection = document.getElementById('products-section');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      const productsSection = document.getElementById('products-section');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Render different views based on currentView state
@@ -357,21 +440,21 @@ const Index = () => {
                 <TrendingUp className="h-5 w-5 text-green-600" aria-hidden="true" />
                 <div className="text-2xl font-bold text-green-600">250+</div>
               </div>
-              <div className="text-xs text-gray-500">Indian Products</div>
+              <div className="text-xs text-gray-500">{t.indianProducts}</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <Users className="h-5 w-5 text-green-600" aria-hidden="true" />
                 <div className="text-2xl font-bold text-green-600">10L+</div>
               </div>
-              <div className="text-xs text-gray-500">Happy Indians</div>
+              <div className="text-xs text-gray-500">{t.happyIndians}</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1">
                 <Star className="h-5 w-5 text-green-600" aria-hidden="true" />
                 <div className="text-2xl font-bold text-green-600">5M kg</div>
               </div>
-              <div className="text-xs text-gray-500">CO2 Saved</div>
+              <div className="text-xs text-gray-500">{t.co2Saved}</div>
             </div>
           </div>
         </div>
@@ -518,9 +601,9 @@ const Index = () => {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="font-semibold text-blue-800">💡 Eco Insight:</h3>
+                        <h3 className="font-semibold text-blue-800">💡 {t.ecoInsight}:</h3>
                         <VoiceSpeaker 
-                          text={`Eco Insight: ${ecoTip}`}
+                          text={`${t.ecoInsight}: ${ecoTip}`}
                           size="sm"
                         />
                       </div>
@@ -581,19 +664,19 @@ const Index = () => {
           <div className="mt-12" id="products-section">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <h2 className="text-3xl font-bold text-center text-gray-800" role="heading" aria-level={2}>
-                {searchQuery ? `Search Results for "${searchQuery}"` : 
+                {searchQuery ? `${t.searchResults} "${searchQuery}"` : 
                  selectedCategory ? `${categories.find(c => c.value === selectedCategory)?.label} Products` :
                  'Authentic Indian Eco-Friendly Products'}
               </h2>
               <VoiceSpeaker 
-                text={`${uniqueProducts.length} products available`}
+                text={`${uniqueProducts.length} ${t.productsAvailable}`}
                 size="sm"
               />
             </div>
             <p className="text-center text-gray-600 mb-8">
-              {searchQuery ? `Found ${uniqueProducts.length} products` : 
-               selectedCategory ? `Showing ${uniqueProducts.length} products in this category` :
-               'Discover traditional and sustainable products from across India'}
+              {searchQuery ? t.foundProducts.replace('{count}', uniqueProducts.length.toString()) : 
+               selectedCategory ? t.showingProducts.replace('{count}', uniqueProducts.length.toString()) :
+               t.authenticIndianProducts}
             </p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" role="grid">
@@ -699,7 +782,7 @@ const Index = () => {
         {!selectedProductId && !searchQuery && !selectedCategory && (
           <div className="mt-16 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-green-100">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8" role="heading" aria-level={2}>
-              How EcoCart India Works
+              {t.howItWorks}
             </h2>
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
@@ -707,28 +790,28 @@ const Index = () => {
                   <span className="text-2xl">🔍</span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">1. Discover Products</h3>
-                <p className="text-gray-600">Search for authentic Indian eco-friendly products</p>
+                <p className="text-gray-600">{t.discoverProductsStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">📊</span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">2. Check EcoScore</h3>
-                <p className="text-gray-600">View sustainability ratings and environmental impact</p>
+                <p className="text-gray-600">{t.checkEcoScoreStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">⭐</span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">3. Read Reviews</h3>
-                <p className="text-gray-600">Check authentic customer reviews and ratings</p>
+                <p className="text-gray-600">{t.readReviewsStep}</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <span className="text-2xl">🛒</span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">4. Shop Sustainably</h3>
-                <p className="text-gray-600">Add to cart and support Indian eco-friendly brands</p>
+                <p className="text-gray-600">{t.shopSustainablyStep}</p>
               </div>
             </div>
           </div>
